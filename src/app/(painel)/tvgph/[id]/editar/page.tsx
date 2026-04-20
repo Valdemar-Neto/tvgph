@@ -20,7 +20,7 @@ export default function EditarReportPage({ params }: { params: { id: string } })
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Placeholder.configure({ placeholder: 'Carregando conteúdo...' }),
+      Placeholder.configure({ placeholder: 'Loading content...' }),
     ],
     content: '',
     editorProps: {
@@ -35,15 +35,15 @@ export default function EditarReportPage({ params }: { params: { id: string } })
       try {
         const res = await fetch(`/api/reports/${params.id}`);
         if (!res.ok) {
-          toast.error('Report não encontrado ou sem permissão.');
-          router.replace('/meus-reports');
+          toast.error('Report not found or access denied.');
+          router.replace('/my-reports');
           return;
         }
         const data = await res.json();
         setReportTitle(`${data.report.area?.name || ''} — ${data.report.isoWeek}`);
         editor?.commands.setContent(data.report.content || '');
       } catch {
-        toast.error('Erro ao carregar report.');
+        toast.error('Failed to load report.');
       } finally {
         setLoading(false);
       }
@@ -54,7 +54,7 @@ export default function EditarReportPage({ params }: { params: { id: string } })
   async function handleSave() {
     const content = editor?.getHTML();
     if (!content || content === '<p></p>') {
-      toast.error('O conteúdo não pode estar vazio.');
+      toast.error('Content cannot be empty.');
       return;
     }
     setSaving(true);
@@ -65,15 +65,15 @@ export default function EditarReportPage({ params }: { params: { id: string } })
         body: JSON.stringify({ content }),
       });
       if (res.ok) {
-        toast.success('Report atualizado com sucesso!');
-        router.push('/meus-reports');
+        toast.success('Report updated successfully!');
+        router.push('/my-reports');
         router.refresh();
       } else {
         const data = await res.json();
-        toast.error(data.error || 'Erro ao salvar.');
+        toast.error(data.error || 'Failed to save.');
       }
     } catch {
-      toast.error('Erro de conexão.');
+      toast.error('Connection error.');
     } finally {
       setSaving(false);
     }
@@ -81,30 +81,30 @@ export default function EditarReportPage({ params }: { params: { id: string } })
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-6">
-      <Link href="/meus-reports">
+      <Link href="/my-reports">
         <Button variant="ghost" size="sm" className="text-muted-foreground -ml-2">
-          <ArrowLeft className="h-4 w-4 mr-2" /> Voltar para Meus Reports
+          <ArrowLeft className="h-4 w-4 mr-2" /> Back to My Reports
         </Button>
       </Link>
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight">Editar Report</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight">Edit Report</h1>
           {reportTitle && <p className="text-muted-foreground text-sm mt-1">{reportTitle}</p>}
         </div>
         <Button onClick={handleSave} disabled={saving || loading}>
           {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
-          {saving ? 'Salvando...' : 'Salvar Alterações'}
+          {saving ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
 
       <Card>
         <CardHeader className="pb-2 border-b">
-          <CardTitle className="text-sm text-muted-foreground font-medium">Conteúdo do Report</CardTitle>
+          <CardTitle className="text-sm text-muted-foreground font-medium">Report Content</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {loading ? (
-            <div className="p-8 text-center text-muted-foreground animate-pulse">Carregando editor...</div>
+            <div className="p-8 text-center text-muted-foreground animate-pulse">Loading editor...</div>
           ) : (
             <EditorContent editor={editor} />
           )}
@@ -112,7 +112,7 @@ export default function EditarReportPage({ params }: { params: { id: string } })
       </Card>
 
       <p className="text-xs text-muted-foreground text-center">
-        Apenas o conteúdo textual pode ser editado. Anexos originais são preservados.
+        Only textual content can be edited. Original attachments are preserved.
       </p>
     </div>
   );

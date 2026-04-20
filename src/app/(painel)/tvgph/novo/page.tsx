@@ -11,9 +11,10 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { SimpleSelect } from '@/components/ui/simple-select';
+import { Input } from '@/components/ui/input';
 import { Paperclip, Loader2, X } from 'lucide-react';
 
-// Função utilitária para pegar a ISO Week atual (Ex: 2026-W16)
+// Utility function to get current ISO Week (Ex: 2026-W16)
 function getCurrentIsoWeek() {
   const now = new Date();
   const d = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
@@ -27,22 +28,23 @@ function getCurrentIsoWeek() {
 interface UserArea { areaId: string; area: { id: string; name: string } }
 interface UploadableFile { file: File; progress: number; }
 
-export default function NovoReportPage() {
+export default function NewReportPage() {
   const router = useRouter();
   
   const [loadingContext, setLoadingContext] = useState(true);
   const [userAreas, setUserAreas] = useState<UserArea[]>([]);
   const [selectedArea, setSelectedArea] = useState<string>('');
+  const [reportTitle, setReportTitle] = useState('');
   const [isoWeek, setIsoWeek] = useState(getCurrentIsoWeek());
   
   const [filesToUpload, setFilesToUpload] = useState<UploadableFile[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Módulo Tiptap do Editor (Toolbar básica minimalista por enquanto)
+  // Tiptap Editor Module
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Placeholder.configure({ placeholder: 'Escreva seu report semanal detalhando o que foi feito, impasses e próximos passos...' })
+      Placeholder.configure({ placeholder: 'Write your weekly report detailing what was done, bottlenecks, and next steps...' })
     ],
     content: '',
     immediatelyRender: false,
@@ -53,7 +55,7 @@ export default function NovoReportPage() {
     },
   });
 
-  // 1. Busca as áreas do Usuário (se ele possui vínculos na base)
+  // 1. Fetch User Areas
   useEffect(() => {
     async function fetchAreas() {
       try {
@@ -61,11 +63,10 @@ export default function NovoReportPage() {
         const data = await res.json();
         if (res.ok && data.user.userAreas && data.user.userAreas.length > 0) {
           setUserAreas(data.user.userAreas);
-          // Força a primeira disciplina como padrão logo de cara pra não bugar o componente
           setSelectedArea(data.user.userAreas[0].areaId);
         }
       } catch (err) {
-        toast.error('Geral: Falha de comunicação.');
+        toast.error('Communication failed.');
       } finally {
         setLoadingContext(false);
       }
@@ -73,7 +74,7 @@ export default function NovoReportPage() {
     fetchAreas();
   }, []);
 
-  // 2. Manipula inclusão de arquivos pela Janela de Seleção
+  // 2. Handle File Selection
   function handleFileSelection(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files).map(file => ({ file, progress: 0 }));
@@ -85,21 +86,21 @@ export default function NovoReportPage() {
     setFilesToUpload(prev => prev.filter((_, i) => i !== index));
   }
 
-  // 3. Orquestrador "Mestre": Envia anexos pro R2, e depois manda o formulário pra API Node!
+  // 3. Orchestrator: Upload to R2 and then submit form to API
   async function handleSubmit() {
-    if (!selectedArea) return toast.warning('Selecione uma área de atuação.');
-    if (!editor || editor.isEmpty) return toast.warning('O report não pode ser vazio.');
+    if (!reportTitle.trim()) return toast.warning('Give your report a title.');
+    if (!selectedArea) return toast.warning('Select a target area.');
+    if (!editor || editor.isEmpty) return toast.warning('Report content cannot be empty.');
 
     setIsSubmitting(true);
     const finalAttachments: Array<{ type: string; url: string; filename: string; sizeBytes: number }> = [];
 
-    // FASE A: Upload Direto (R2 Cloudflare via Pre-Signed)
+    // PHASE A: Direct Upload (Cloudflare R2 via Pre-Signed)
     for (let i = 0; i < filesToUpload.length; i++) {
         const item = filesToUpload[i];
         const { file } = item;
 
         try {
-            // Pede a URL pra API
             const presignRes = await fetch('/api/reports/presign', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -109,7 +110,6 @@ export default function NovoReportPage() {
 
             if (!presignRes.ok) throw new Error(presignData.error);
 
-            // Abre transporte real (XHR nativo permite escutar o XML progress event!)
             await new Promise<void>((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
                 xhr.upload.onprogress = (e) => {
@@ -126,14 +126,13 @@ export default function NovoReportPage() {
                 xhr.setRequestHeader('Content-Type', file.type);
                 xhr.onload = () => {
                     if (xhr.status === 200) {
-                        // Classificador Simples de tipo
                         let attachmentType = 'IMAGE';
                         if (file.type.includes('video')) attachmentType = 'VIDEO';
                         if (file.type.includes('pdf')) attachmentType = 'PDF';
                         
                         finalAttachments.push({
                             type: attachmentType,
-                            url: `https://${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL || ''}/${presignData.objectKey}`, // Na Fase 3 você configuará o domínio público (CORS) das midias!
+                            url: `https://${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL || ''}/${presignData.objectKey}`,
                             filename: file.name,
                             sizeBytes: file.size
                         });
@@ -144,15 +143,16 @@ export default function NovoReportPage() {
                 xhr.send(file);
             });
         } catch(err) {
-            toast.error(`Falha ao subir anexos: ${file.name}`);
+            toast.error(`Failed to upload attachment: ${file.name}`);
             setIsSubmitting(false);
             return;
         }
     }
 
-    // FASE B: Gravar na Tabela Report (Banco Railway de Dados)
+    // PHASE B: Save to Report Table
     try {
         const payload = {
+            title: reportTitle,
             areaId: selectedArea,
             isoWeek,
             content: editor.getHTML(),
@@ -168,61 +168,72 @@ export default function NovoReportPage() {
         const dataRes = await apiRes.json();
         
         if (apiRes.ok) {
-            toast.success('Report enviado com sucesso!');
-            router.push('/meus-reports');
+            toast.success('Report submitted successfully!');
+            router.push('/my-reports');
         } else {
-            toast.error(dataRes.error || 'Erro processando gravamento no banco.');
+            toast.error(dataRes.error || 'Error saving to database.');
         }
 
     } catch (error) {
-        toast.error('Erro geral ao enviar Report. Servidor possivelmente indisponível.');
+        toast.error('General error submitting report. Server might be unavailable.');
     } finally {
         setIsSubmitting(false);
     }
   }
 
-  if (loadingContext) return <div className="p-8">Verificando áreas de atuação...</div>;
+  if (loadingContext) return <div className="p-8">Verifying target areas...</div>;
 
   return (
     <Card className="max-w-3xl mx-auto border-none shadow-none md:border md:shadow-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Novo Report Semanal</CardTitle>
-        <CardDescription>Semana Fiscal: <span className="font-bold text-primary">{isoWeek}</span></CardDescription>
+        <CardTitle className="text-2xl">New Weekly Report</CardTitle>
+        <CardDescription>Fiscal Week: <span className="font-bold text-primary">{isoWeek}</span></CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         
-        {/* Combo Box Área de Atuação */}
+        {/* Report Title */}
         <div className="space-y-2">
-           <p className="text-sm font-medium">Área Destino</p>
+           <p className="text-sm font-medium">Report Title</p>
+           <Input 
+             placeholder="Ex: Circuit Analysis - Board X12" 
+             value={reportTitle}
+             onChange={(e) => setReportTitle(e.target.value)}
+             className="h-11 shadow-sm"
+           />
+        </div>
+
+        {/* Target Area Selector */}
+        <div className="space-y-2">
+           <p className="text-sm font-medium">Target Area</p>
            {userAreas.length === 0 ? (
-               <div className="text-destructive text-sm font-bold">Você não está vinculado a nenhuma área. Contate um gestor.</div>
+               <div className="text-destructive text-sm font-bold">You are not linked to any area. Contact a manager.</div>
            ) : (
                <SimpleSelect
                  value={selectedArea}
                  onValueChange={(val) => val && setSelectedArea(val)}
                  options={userAreas.map(ua => ({ value: ua.areaId, label: ua.area.name }))}
-                 placeholder="Selecione sua Área..."
+                 placeholder="Select your Area..."
                  className="w-full"
                />
            )}
         </div>
 
-        {/* Instância do Editor Tiptap */}
+        {/* Tiptap Editor Instance */}
         <div className="space-y-2">
-            <p className="text-sm font-medium">Descrição do Progresso</p>
+            <p className="text-sm font-medium">Progress Description</p>
             <EditorContent editor={editor} className="bg-background" />
         </div>
 
-        {/* Zona do Anexo R2 */}
+        {/* R2 Attachment Zone */}
         <div className="space-y-4">
              <div className="flex justify-between items-center bg-muted/50 p-4 rounded-md border border-dashed">
                  <div>
-                     <p className="font-medium text-sm">Arquivos e Evidências</p>
-                     <p className="text-xs text-muted-foreground">Vídeos MP4, Fotos ou PDFs (Dica: R2 aceita GBs!)</p>
+                     <p className="font-medium text-sm">Files and Evidence</p>
+                     <p className="text-xs text-muted-foreground">MP4 Videos, Images, or PDFs (Note: R2 supports GBs!)</p>
                  </div>
                  <div>
                     <Button variant="outline" size="sm" className="relative cursor-pointer">
-                        <Paperclip className="h-4 w-4 mr-2" /> Anexar
+                        <Paperclip className="h-4 w-4 mr-2" /> Attach
                         <input 
                           type="file" multiple 
                           className="absolute inset-0 opacity-0 cursor-pointer"
@@ -234,7 +245,7 @@ export default function NovoReportPage() {
                  </div>
              </div>
 
-             {/* Fila de Progresso Visual dos Arquivos */}
+             {/* File Progress Queue */}
              {filesToUpload.length > 0 && (
                 <div className="space-y-3 pt-2">
                     {filesToUpload.map((item, idx) => (
@@ -262,7 +273,7 @@ export default function NovoReportPage() {
           disabled={!selectedArea || isSubmitting || userAreas.length === 0}
           onClick={handleSubmit}
         >
-            {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processando Tráfego e Salvando...</> : 'Enviar Relatório do Grupo'}
+            {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing traffic and saving...</> : 'Submit Group Report'}
         </Button>
 
       </CardContent>

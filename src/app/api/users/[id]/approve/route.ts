@@ -1,27 +1,19 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
+import prisma from '@/lib/prisma';
+import { getAuthSession } from '@/lib/auth';
 
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get('auth_token')?.value;
+    const decoded = getAuthSession();
 
-    if (!token) {
+    if (!decoded) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
-    // Decodifica o token para verificar se é MANAGER
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string, role: string };
-
-    if (decoded.role !== 'MANAGER') {
+    if (!['MANAGER', 'PROFESSOR'].includes(decoded.role)) {
       return NextResponse.json({ error: 'Acesso Negado: Apenas gestores podem aprovar usuários.' }, { status: 403 });
     }
 

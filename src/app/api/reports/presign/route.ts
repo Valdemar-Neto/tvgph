@@ -6,37 +6,44 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import r2Client from '@/lib/r2';
 import crypto from 'crypto';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
+import { getAuthSession } from '@/lib/auth';
+
 const BUCKET_NAME = process.env.CLOUDFLARE_R2_BUCKET_NAME;
 
 export async function POST(req: Request) {
   try {
-    const token = cookies().get('auth_token')?.value;
-    if (!token) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-    }
+    const body = await req.json();
+    const { filename, contentType, isAvatar } = body;
 
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string, role: string };
+    const decoded = getAuthSession();
     
-    // Body parse para pegar os detalhes do arquivo requisitado
-    const { filename, contentType } = await req.json();
-
+    // If not avatar, authentication is required
+    if (!isAvatar && !decoded) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
     if (!filename || !contentType) {
-      return NextResponse.json({ error: 'Faltam propriedades relativas ao arquivo' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing file properties' }, { status: 400 });
     }
 
-    // Criar chave do objeto com UUID p/ não sobrescrever (ex: reports/2026-W22/uuid-meuarquivo.mp4)
     const fileExtension = filename.split('.').pop();
     const uniqueId = crypto.randomUUID();
-    const objectKey = `reports/${decoded.userId}/${uniqueId}.${fileExtension}`;
+    
+    // If avatar and no session (registration), use public folder
+    // If there is a session, use the user ID
+    const pathPrefix = isAvatar 
+      ? (decoded ? `avatars/${decoded.userId}` : `avatars/public`)
+      : `reports/${decoded?.userId}`;
+
+    const objectKey = `${pathPrefix}/${uniqueId}.${fileExtension}`;
 
     const command = new PutObjectCommand({
       Bucket: BUCKET_NAME,
       Key: objectKey,
-      ContentType: contentType, // O Content-Type deve bater exatamente ao do PUT Request que o client vai fazer
+      ContentType: contentType, // Content-Type must match exactly the PUT Request from the client
     });
 
-    const presignedUrl = await getSignedUrl(r2Client, command, { expiresIn: 3600 }); // Validade 1 hora
+    const presignedUrl = await getSignedUrl(r2Client, command, { expiresIn: 3600 }); // Valid for 1 hour
 
     return NextResponse.json({ 
       url: presignedUrl, 
@@ -45,6 +52,6 @@ export async function POST(req: Request) {
 
   } catch (error) {
     console.error('Presigner Error:', error);
-    return NextResponse.json({ error: 'Falha ao assinar a requisição de upload' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to sign upload request' }, { status: 500 });
   }
 }

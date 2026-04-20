@@ -4,10 +4,11 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 
 const registerSchema = z.object({
-  name: z.string().min(1, 'Nome é obrigatório'),
-  email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
   areaIds: z.array(z.string().uuid()).optional(),
+  avatarUrl: z.string().url().optional(),
 });
 
 export async function POST(req: Request) {
@@ -16,17 +17,17 @@ export async function POST(req: Request) {
     const result = registerSchema.safeParse(body);
     
     if (!result.success) {
-      return NextResponse.json({ error: 'Dados inválidos', details: result.error.format() }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid data', details: result.error.format() }, { status: 400 });
     }
 
-    const { name, email, password, areaIds } = result.data;
+    const { name, email, password, areaIds, avatarUrl } = result.data;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
-      return NextResponse.json({ error: 'Este email já está em uso' }, { status: 400 });
+      return NextResponse.json({ error: 'This email is already in use' }, { status: 400 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -36,11 +37,12 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashedPassword,
-        active: false, // Membros ficam inativos até aprovação do Gerente
+        avatarUrl,
+        active: false, // Members remain inactive until Manager approval
       },
     });
 
-    // Se areas foram enviadas, conectar via UserArea
+    // Connect areas via UserArea if provided
     if (areaIds && areaIds.length > 0) {
       await prisma.userArea.createMany({
         data: areaIds.map(areaId => ({
@@ -51,12 +53,12 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ 
-      message: 'Usuário registrado com sucesso. Aguarde a aprovação do gerente.', 
+      message: 'User registered successfully. Please wait for manager approval.', 
       user: { id: user.id, name: user.name, email: user.email } 
     }, { status: 201 });
 
   } catch (error) {
     console.error('Registration Error:', error);
-    return NextResponse.json({ error: 'Erro interno ao processar o registro' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal error processing registration' }, { status: 500 });
   }
 }

@@ -4,22 +4,13 @@ import { z } from 'zod';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
-
-function authenticate(req: Request) {
-  const token = cookies().get('auth_token')?.value;
-  if (!token) return null;
-  try {
-    return jwt.verify(token, JWT_SECRET) as { userId: string, role: string };
-  } catch {
-    return null;
-  }
-}
+import { getAuthSession } from '@/lib/auth';
 
 const createReportSchema = z.object({
+  title: z.string().min(2, 'Title must be at least 2 characters').max(100, 'Title too long'),
   areaId: z.string().uuid(),
-  content: z.string().min(1, 'O conteúdo do report é obrigatório'),
-  isoWeek: z.string(), // ex: "2025-W22"
+  content: z.string().min(1, 'Report content is required'),
+  isoWeek: z.string().regex(/^\d{4}-W\d{2}$/, 'Invalid week format (Ex: 2026-W15)'), 
   attachments: z.array(z.object({
     type: z.enum(['VIDEO', 'PDF', 'IMAGE']),
     url: z.string(),
@@ -29,7 +20,12 @@ const createReportSchema = z.object({
 });
 
 export async function GET(req: Request) {
-  // Retornar lista de reports
+  const authPayload = getAuthSession();
+  if (!authPayload) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Return list of reports
   const { searchParams } = new URL(req.url);
   const areaId = searchParams.get('areaId');
   const isoWeek = searchParams.get('isoWeek');
@@ -51,14 +47,14 @@ export async function GET(req: Request) {
     return NextResponse.json(reports);
   } catch (error) {
     console.error('Fetch Reports Error:', error);
-    return NextResponse.json({ error: 'Erro ao buscar reports' }, { status: 500 });
+    return NextResponse.json({ error: 'Error fetching reports' }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
-  const authPayload = authenticate(req);
+  const authPayload = getAuthSession();
   if (!authPayload) {
-    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
@@ -66,12 +62,12 @@ export async function POST(req: Request) {
     const result = createReportSchema.safeParse(body);
 
     if (!result.success) {
-      return NextResponse.json({ error: 'Dados inválidos', details: result.error.format() }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid data', details: result.error.format() }, { status: 400 });
     }
 
-    const { areaId, content, isoWeek, attachments } = result.data;
+    const { title, areaId, content, isoWeek, attachments } = result.data;
 
-    // Verificar duplicação de report por área, autor e isoWeek
+    // Check for duplicate report by area, author and isoWeek
     const existing = await prisma.report.findUnique({
       where: {
         authorId_areaId_isoWeek: {
@@ -83,13 +79,14 @@ export async function POST(req: Request) {
     });
 
     if (existing) {
-      return NextResponse.json({ error: 'Você já enviou um report para esta área nesta semana.' }, { status: 400 });
+      return NextResponse.json({ error: 'You have already submitted a report for this area this week.' }, { status: 400 });
     }
 
     const report = await prisma.report.create({
       data: {
         authorId: authPayload.userId,
         areaId,
+        title,
         content,
         isoWeek,
         status: 'SUBMITTED', // Defaults to DRAFT by prisma, but we set SUBMITTED for direct sends
@@ -99,9 +96,9 @@ export async function POST(req: Request) {
       }
     });
 
-    return NextResponse.json({ message: 'Report criado com sucesso', report }, { status: 201 });
+    return NextResponse.json({ message: 'Report created successfully', report }, { status: 201 });
   } catch (error) {
     console.error('Create Report Error:', error);
-    return NextResponse.json({ error: 'Erro ao criar report' }, { status: 500 });
+    return NextResponse.json({ error: 'Error creating report' }, { status: 500 });
   }
 }

@@ -1,17 +1,12 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
+import { getAuthSession } from '@/lib/auth';
 
 export async function GET() {
   try {
-    const token = cookies().get('auth_token')?.value;
-    if (!token) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-
-    const payload = jwt.verify(token, JWT_SECRET) as { role: string };
-    if (payload.role !== 'MANAGER') return NextResponse.json({ error: 'Acesso negado' }, { status: 403 });
+    const payload = getAuthSession();
+    if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!['MANAGER', 'PROFESSOR'].includes(payload.role)) return NextResponse.json({ error: 'Access denied' }, { status: 403 });
 
     const meetings = await prisma.meeting.findMany({
       orderBy: { date: 'asc' },
@@ -22,13 +17,13 @@ export async function GET() {
       }
     });
 
-    // Montar CSV
-    const lines: string[] = ['Reunião,Data,Membro,Email,Presente'];
+    // Generate CSV
+    const lines: string[] = ['Meeting,Date,Member,Email,Present'];
     for (const meeting of meetings) {
-      const dateStr = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeZone: 'UTC' }).format(new Date(meeting.date));
+      const dateStr = new Intl.DateTimeFormat('en-US', { dateStyle: 'short', timeZone: 'UTC' }).format(new Date(meeting.date));
       for (const att of (meeting as any).attendance) {
-        const present = att.present ? 'Sim' : 'Não';
-        // Escapar vírgulas nos campos de texto
+        const present = att.present ? 'Yes' : 'No';
+        // Escape quotes in text fields
         const title = `"${meeting.title.replace(/"/g, '""')}"`;
         const name = `"${att.user.name.replace(/"/g, '""')}"`;
         lines.push(`${title},${dateStr},${name},${att.user.email},${present}`);
@@ -41,10 +36,10 @@ export async function GET() {
       status: 200,
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="presencas-tvgph-${new Date().toISOString().slice(0, 10)}.csv"`,
+        'Content-Disposition': `attachment; filename="attendance-tvgph-${new Date().toISOString().slice(0, 10)}.csv"`,
       },
     });
   } catch (error) {
-    return NextResponse.json({ error: 'Erro ao gerar relatório' }, { status: 500 });
+    return NextResponse.json({ error: 'Error generating report' }, { status: 500 });
   }
 }
