@@ -5,11 +5,11 @@ const ACCESS_KEY = process.env.CLOUDFLARE_R2_ACCESS_KEY;
 const SECRET_KEY = process.env.CLOUDFLARE_R2_SECRET_KEY;
 
 if (!ACCOUNT_ID || !ACCESS_KEY || !SECRET_KEY) {
-  throw new Error('As variáveis de ambiente do Cloudflare R2 não estão configuradas corretamente.');
+  throw new Error('Cloudflare R2 environment variables are not correctly configured.');
 }
 
 const r2Client = new S3Client({
-  region: 'auto', // R2 requer que a region seja 'auto'
+  region: 'auto', // R2 requires the region to be 'auto'
   endpoint: `https://${ACCOUNT_ID}.r2.cloudflarestorage.com`,
   credentials: {
     accessKeyId: ACCESS_KEY,

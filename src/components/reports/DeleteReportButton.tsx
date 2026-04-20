@@ -14,21 +14,21 @@ export function DeleteReportButton({ reportId }: { reportId: string }) {
   async function handleDelete() {
     if (!confirming) {
       setConfirming(true);
-      setTimeout(() => setConfirming(false), 4000); // Auto-reset após 4s
+      setTimeout(() => setConfirming(false), 4000); // Auto-reset after 4s
       return;
     }
     setLoading(true);
     try {
       const res = await fetch(`/api/reports/${reportId}`, { method: 'DELETE' });
       if (res.ok) {
-        toast.success('Report excluído com sucesso.');
+        toast.success('Report deleted successfully.');
         router.refresh();
       } else {
         const data = await res.json();
-        toast.error(data.error || 'Erro ao excluir report.');
+        toast.error(data.error || 'Error deleting report.');
       }
     } catch {
-      toast.error('Erro de conexão.');
+      toast.error('Connection error.');
     } finally {
       setLoading(false);
       setConfirming(false);
@@ -44,7 +44,7 @@ export function DeleteReportButton({ reportId }: { reportId: string }) {
       className={`h-8 text-xs transition-all ${!confirming ? 'text-muted-foreground hover:text-destructive' : ''}`}
     >
       <Trash2 className="h-3 w-3 mr-1" />
-      {loading ? 'Excluindo...' : confirming ? 'Confirmar exclusão' : 'Excluir'}
+      {loading ? 'Deleting...' : confirming ? 'Confirm deletion' : 'Delete'}
     </Button>
   );
 }
