@@ -1,0 +1,428 @@
+openapi: 3.0.0
+info:
+  title: TvGPH API
+  version: 1.0.0
+  description: API for the Hardware Research Group (TvGPH) platform.
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local Development Server
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: auth_token
+      description: "JWT Token stored as an HttpOnly cookie."
+
+  schemas:
+    Report:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        content:
+          type: string
+        isoWeek:
+          type: string
+          example: "2026-W15"
+        status:
+          type: string
+          enum: [DRAFT, SUBMITTED, REVIEWED]
+        authorId:
+          type: string
+        areaId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+        area:
+          $ref: '#/components/schemas/Area'
+        author:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            avatarUrl:
+              type: string
+              nullable: true
+
+    Attachment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+        filename:
+          type: string
+        type:
+          type: string
+          enum: [VIDEO, PDF, IMAGE]
+        sizeBytes:
+          type: integer
+
+    Area:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [MEMBER, MANAGER, ADMIN]
+        active:
+          type: boolean
+        bio:
+          type: string
+          nullable: true
+
+security:
+  - cookieAuth: []
+
+paths:
+  /auth/login:
+    post:
+      summary: Authenticate user and set session cookie
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Successfully logged in
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+        '400':
+          description: Invalid data
+        '401':
+          description: Invalid credentials
+        '403':
+          description: Inactive account
+
+  /auth/register:
+    post:
+      summary: Register a new member (pending approval)
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 6
+                areaIds:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '201':
+          description: User registered
+        '400':
+          description: Email already in use or invalid data
+
+  /auth/me:
+    get:
+      summary: Get authenticated user data
+      tags: [Authentication]
+      responses:
+        '200':
+          description: User data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+    patch:
+      summary: Update authenticated user profile (name, bio)
+      tags: [Authentication]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                bio:
+                  type: string
+      responses:
+        '200':
+          description: Profile updated
+
+  /auth/forgot-password:
+    post:
+      summary: Request password recovery link
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Reset link sent if email exists
+
+  /auth/reset-password:
+    post:
+      summary: Reset password via token
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        '200':
+          description: Password successfully changed
+        '400':
+          description: Invalid or expired token
+
+  /reports:
+    get:
+      summary: List all reports
+      tags: [Reports]
+      parameters:
+        - in: query
+          name: areaId
+          schema:
+            type: string
+            format: uuid
+          description: Optional filter by area ID
+        - in: query
+          name: isoWeek
+          schema:
+            type: string
+          description: Optional filter by ISO week (e.g., 2026-W15)
+      responses:
+        '200':
+          description: List of reports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Report'
+        '401':
+          description: Unauthorized
+
+    post:
+      summary: Create a new report
+      tags: [Reports]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [areaId, content, isoWeek]
+              properties:
+                areaId:
+                  type: string
+                  format: uuid
+                content:
+                  type: string
+                isoWeek:
+                  type: string
+                  pattern: '^\d{4}-W\d{2}$'
+                attachments:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      url:
+                        type: string
+                      filename:
+                        type: string
+                      sizeBytes:
+                        type: integer
+      responses:
+        '201':
+          description: Report created
+        '400':
+          description: Invalid data or duplicate report in the same week and area
+        '401':
+          description: Unauthorized
+
+  /reports/{id}:
+    get:
+      summary: Get a specific report
+      tags: [Reports]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Report details
+        '403':
+          description: Access denied (if not manager or author)
+        '404':
+          description: Report not found
+
+    patch:
+      summary: Edit a report
+      description: Members can only edit if it belongs to the current week and status is SUBMITTED.
+      tags: [Reports]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                status:
+                  type: string
+                  description: Only managers can change the status.
+      responses:
+        '200':
+          description: Report updated
+        '403':
+          description: Access denied for editing or deadline expired
+
+    delete:
+      summary: Delete a report
+      tags: [Reports]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successfully removed
+        '403':
+          description: Access denied
+
+  /reports/presign:
+    post:
+      summary: Generate countersigned URL for Cloudflare R2 upload
+      tags: [Reports]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filename:
+                  type: string
+                contentType:
+                  type: string
+      responses:
+        '200':
+          description: Returns presigned URL and objectKey
+        '400':
+          description: Missing parameters
+
+  /attendance/export:
+    get:
+      summary: Export attendance as CSV (Manager Only)
+      tags: [Management]
+      responses:
+        '200':
+          description: CSV File
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '403':
+          description: Access denied
+
+  /users/{id}/approve:
+    patch:
+      summary: Approve member registration (Manager Only)
+      tags: [Management]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User activated
+        '403':
+          description: Access denied
