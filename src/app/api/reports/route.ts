@@ -19,7 +19,13 @@ function authenticate(req: Request) {
 const createReportSchema = z.object({
   areaId: z.string().uuid(),
   content: z.string().min(1, 'O conteúdo do report é obrigatório'),
-  isoWeek: z.string() // ex: "2025-W22"
+  isoWeek: z.string(), // ex: "2025-W22"
+  attachments: z.array(z.object({
+    type: z.enum(['VIDEO', 'PDF', 'IMAGE']),
+    url: z.string(),
+    filename: z.string(),
+    sizeBytes: z.number().int()
+  })).optional().default([])
 });
 
 export async function GET(req: Request) {
@@ -63,7 +69,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Dados inválidos', details: result.error.format() }, { status: 400 });
     }
 
-    const { areaId, content, isoWeek } = result.data;
+    const { areaId, content, isoWeek, attachments } = result.data;
 
     // Verificar duplicação de report por área, autor e isoWeek
     const existing = await prisma.report.findUnique({
@@ -86,7 +92,10 @@ export async function POST(req: Request) {
         areaId,
         content,
         isoWeek,
-        status: 'SUBMITTED' // Defaults to DRAFT by prisma, but we set SUBMITTED for direct sends
+        status: 'SUBMITTED', // Defaults to DRAFT by prisma, but we set SUBMITTED for direct sends
+        attachments: {
+          create: attachments,
+        }
       }
     });
 
