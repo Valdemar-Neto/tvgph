@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn, getISOWeekString, getISOWeekRange } from '@/lib/utils';
 import { ReportCardImage } from '@/components/reports/ReportCardImage';
 import { LikeButton } from '@/components/reports/LikeButton';
+import Image from 'next/image';
 import { ReportStatus, AreaName } from '@prisma/client';
 
 interface ReportWithRelations {
@@ -72,7 +73,7 @@ export default async function TvgphGlobalFeedPage({
           { author: { name: { contains: query, mode: 'insensitive' } } }
         ]
       } : {}),
-      ...(areaFilter && areaFilter !== 'TODOS' ? { area: { name: areaFilter as any } } : {})
+      ...(areaFilter && areaFilter !== 'TODOS' ? { area: { name: areaFilter as AreaName } } : {})
     },
     include: {
       author: { select: { id: true, name: true, avatarUrl: true } },
@@ -185,11 +186,12 @@ export default async function TvgphGlobalFeedPage({
                 {/* Footer Meta */}
                 <div className="pt-6 border-t border-slate-50 flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-xl bg-slate-100 overflow-hidden ring-2 ring-white shadow-sm ring-offset-0">
-                      <img
+                    <div className="h-10 w-10 rounded-xl bg-slate-100 overflow-hidden ring-2 ring-white shadow-sm ring-offset-0 relative">
+                      <Image
                         src={report.author.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${report.author.name || 'User'}`}
                         alt={report.author.name}
-                        className="h-full w-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     </div>
                     <div>

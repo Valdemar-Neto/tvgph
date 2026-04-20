@@ -49,7 +49,7 @@ export default function EditarReportPage({ params }: { params: { id: string } })
       }
     }
     if (editor) loadReport();
-  }, [editor]);
+  }, [editor, params.id, router]);
 
   async function handleSave() {
     const content = editor?.getHTML();

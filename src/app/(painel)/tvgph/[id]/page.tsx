@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import Image from 'next/image';
 import { redirect, notFound } from 'next/navigation';
 import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
@@ -160,7 +161,12 @@ export default async function ReportDetailPage({ params }: { params: { id: strin
 
                   {att.type === 'IMAGE' && (
                     <div className="w-full aspect-video bg-background relative flex items-center justify-center overflow-hidden circuit-border border-0">
-                      <img src={att.url} alt={att.filename} className="object-contain h-full w-full opacity-90 hover:opacity-100 transition-opacity" />
+                      <Image 
+                        src={att.url} 
+                        alt={att.filename} 
+                        fill
+                        className="object-contain opacity-90 hover:opacity-100 transition-opacity" 
+                      />
                     </div>
                   )}
 

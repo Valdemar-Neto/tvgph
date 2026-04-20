@@ -8,6 +8,7 @@ import { getPendingReportsAction } from '@/app/actions/manager';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import Image from 'next/image';
 
 interface PendingReport {
   id: string;
@@ -182,8 +183,13 @@ export function Header({ userName, avatarUrl, role }: { userName?: string, avata
               {role === 'PROFESSOR' ? 'Main Manager' : role}
             </p>
           </div>
-          <div className="h-9 w-9 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-sm ring-1 ring-slate-100">
-            <img src={displayAvatar} alt="User" className="h-full w-full object-cover" />
+          <div className="h-9 w-9 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-sm ring-1 ring-slate-100 relative">
+            <Image 
+              src={displayAvatar} 
+              alt="User" 
+              fill
+              className="object-cover" 
+            />
           </div>
         </button>
       </div>

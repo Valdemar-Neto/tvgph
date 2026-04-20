@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 interface ReportCardImageProps {
   src: string;
@@ -14,10 +15,11 @@ export function ReportCardImage({ src, alt }: ReportCardImageProps) {
 
   return (
     <div className="h-48 overflow-hidden rounded-t-3xl relative">
-      <img 
+      <Image 
         src={src} 
         alt={alt} 
-        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+        fill
+        className="object-cover group-hover:scale-105 transition-transform duration-700" 
         onError={() => setHasError(true)}
       />
     </div>

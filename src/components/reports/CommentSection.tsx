@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import Image from 'next/image';
 import { MessageSquare, Send, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -114,11 +115,12 @@ export function CommentSection({ reportId, initialComments, currentUserId, curre
           comments.map((comment) => (
             <div key={comment.id} className="group flex gap-4 animate-in fade-in slide-in-from-left-2 duration-500">
               <div className="flex-shrink-0">
-                <div className="h-10 w-10 circuit-border border-primary/30 p-0.5 overflow-hidden bg-background">
-                  <img
+                <div className="h-10 w-10 circuit-border border-primary/30 p-0.5 overflow-hidden bg-background relative">
+                  <Image
                     src={comment.user.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user.name}`}
                     alt={comment.user.name}
-                    className="h-full w-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all"
+                    fill
+                    className="object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all"
                   />
                 </div>
               </div>

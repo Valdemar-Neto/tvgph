@@ -1,6 +1,21 @@
 import { withSentryConfig } from '@sentry/nextjs';
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'api.dicebear.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pub-8aa1e7e1a2904f14a72ae6f3075b435c.r2.dev',
+        pathname: '/**',
+      }
+    ],
+  },
+};
 
 export default withSentryConfig(nextConfig, {
   // For all available options, see:
