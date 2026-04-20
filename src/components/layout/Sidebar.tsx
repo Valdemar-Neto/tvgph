@@ -3,7 +3,18 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, LogOut, Tv, User as UserIcon, LayoutDashboard, AlertCircle } from 'lucide-react';
+import {
+  LayoutDashboard,
+  GraduationCap,
+  FlaskConical,
+  Calendar,
+  Megaphone,
+  Settings,
+  LogOut,
+  Plus,
+  NotebookPen,
+  Tv
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -18,83 +29,81 @@ export function Sidebar({ role, hasReportedThisWeek }: SidebarProps) {
   async function handleLogout() {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
-      toast.success('Deslogado com sucesso');
+      toast.success('Disconnected from Laboratory');
       window.location.href = '/login';
     } catch (error) {
-      toast.error('Erro ao sair da conta');
+      toast.error('Failed to log out');
     }
   }
 
   const navLinks = [
-    { label: 'TvGPH', href: '/tvgph', icon: Tv },
-    { label: 'Meus Reports', href: '/meus-reports', icon: BookOpen },
-    { label: 'Meu Perfil', href: '/meu-perfil', icon: UserIcon },
+    { label: 'Feed GPH', href: '/tvgph', icon: Tv },
+    { label: 'My Reports', href: '/my-reports', icon: NotebookPen },
+    { label: 'Attendance', href: '/attendance', icon: GraduationCap },
+    { label: 'Events', href: '/tvgph?area=EVENTOS', icon: Calendar },
+    { label: 'Marketing', href: '/tvgph?area=MARKETING', icon: Megaphone },
+    { label: 'Settings', href: '/my-profile', icon: Settings },
   ];
 
-  if (role === 'MANAGER') {
-    navLinks.push({ label: 'Painel Gerencial', href: '/dashboard', icon: LayoutDashboard });
+  if (['MANAGER', 'PROFESSOR'].includes(role)) {
+    navLinks.push({ label: 'Admin Panel', href: '/dashboard', icon: LayoutDashboard });
   }
 
   return (
-    <aside className="w-full md:w-64 bg-background border-r flex flex-col justify-between md:h-[calc(100vh)] overflow-y-auto">
-      <div className="p-6">
-        <h1 className="text-2xl font-bold tracking-tight text-primary mb-8">
-          TvGPH
-        </h1>
-        <nav className="space-y-2">
+    <aside className="w-full md:w-64 bg-white border-r border-slate-100 flex flex-col justify-between md:h-screen sticky top-0 overflow-hidden shadow-sm">
+      <div className="p-6 flex flex-col h-full">
+        {/* Brand Logo */}
+        {/* Brand Logo */}
+        <div className="flex flex-col items-center gap-3 mb-10 px-2 transition-all hover:opacity-80">
+          <div className="h-20 w-20 bg-white rounded-2xl shadow-xl shadow-slate-200 flex items-center justify-center p-2.5 border border-slate-100">
+            <img src="/gph-icon.png" alt="GPH Logo" className="h-full w-full object-contain" />
+          </div>
+          <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-[0.3em] block text-center">Hardware Research Group</span>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 space-y-1.5 overflow-y-auto px-1">
           {navLinks.map((link) => {
             const Icon = link.icon;
-            
-            // Regra mais precisa para saber se o link atual tá ativo ou não
-            const exactActive = 
-              pathname === link.href || 
-              (link.href !== '/dashboard' && pathname.startsWith(link.href)) || 
-              (link.href === '/dashboard' && pathname.startsWith('/dashboard'));
+            const isActive = pathname === link.href || (link.href !== '#' && pathname.startsWith(link.href));
 
             return (
               <Link
-                key={link.href}
+                key={link.label}
                 href={link.href}
-                className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
-                  exactActive 
-                    ? 'bg-primary text-primary-foreground font-medium' 
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                }`}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${isActive
+                  ? 'bg-primary/5 text-primary'
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                  }`}
               >
-                <Icon className="h-4 w-4" />
-                {link.label}
+                <Icon className={`h-4.5 w-4.5 transition-colors ${isActive ? 'text-primary' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                <span className={`text-[13px] font-semibold ${isActive ? 'text-primary font-bold' : ''}`}>{link.label}</span>
+                {isActive && (
+                  <div className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
+                )}
               </Link>
             );
           })}
         </nav>
 
-        {(!hasReportedThisWeek && role === 'MEMBER') && (
-           <div className="mt-8 p-4 bg-destructive/10 border-l-4 border-destructive rounded-r-md flex flex-col gap-2 animate-in fade-in zoom-in duration-500">
-             <div className="flex items-center text-destructive font-bold text-sm">
-                <AlertCircle className="w-4 h-4 mr-2" />
-                Ação Necessária
-             </div>
-             <p className="text-xs text-destructive/80 font-medium leading-relaxed">
-                Você ainda não enviou seu report desta semana.
-             </p>
-             <Link href="/tvgph/novo">
-                <Button variant="destructive" size="sm" className="w-full mt-2 text-xs font-semibold h-8 uppercase tracking-wider">
-                   Escrever agora
-                </Button>
-             </Link>
-           </div>
-        )}
-      </div>
+        {/* Action Button */}
+        <div className="mt-auto pt-6 space-y-3">
+          <Link href="/tvgph/novo">
+            <Button className="w-full h-11 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:bg-primary/90 flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              New Report
+            </Button>
+          </Link>
 
-      <div className="p-6 border-t mt-auto">
-        <Button 
-          variant="ghost" 
-          className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive"
-          onClick={handleLogout}
-        >
-          <LogOut className="h-4 w-4" />
-          Sair da conta
-        </Button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-3 px-3 h-10 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all text-xs font-bold"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4" />
+            Sign Out
+          </Button>
+        </div>
       </div>
     </aside>
   );
