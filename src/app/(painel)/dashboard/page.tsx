@@ -18,6 +18,8 @@ import { ReportChart } from './components/ReportChart';
 import { PresenceChart } from './components/PresenceChart';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
+import { Area, Meeting, Attendance, UserArea } from '@prisma/client';
 import { getISOWeekString, cn } from '@/lib/utils';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
@@ -59,7 +61,7 @@ export default async function DashboardPage() {
 
   // Dados para gráfico de barras (reports por área)
   const reportsData = await Promise.all(
-    areas.map(async (area: any) => {
+    areas.map(async (area: Area) => {
       const total = await prisma.report.count({
         where: {
           areaId: area.id,
@@ -71,9 +73,9 @@ export default async function DashboardPage() {
   );
 
   // Dados para gráfico de linha (% presença por reunião)
-  const presenceData = meetings.reverse().map((m: any) => {
+  const presenceData = meetings.reverse().map((m: Meeting & { attendance: Attendance[] }) => {
     const total = m.attendance.length;
-    const present = m.attendance.filter((a: any) => a.present).length;
+    const present = m.attendance.filter((a: Attendance) => a.present).length;
     const taxa = total > 0 ? Math.round((present / total) * 100) : 0;
     const label = new Intl.DateTimeFormat('en-US', { day: '2-digit', month: 'short', timeZone: 'UTC' }).format(new Date(m.date));
     return { label, taxa };
@@ -85,15 +87,15 @@ export default async function DashboardPage() {
     select: { authorId: true },
     distinct: ['authorId']
   });
-  const reporterIds = new Set(reportersThisWeek.map((r: any) => r.authorId));
-  const pendingMembers = activeUsers.filter((u: any) => !reporterIds.has(u.id));
+  const reporterIds = new Set(reportersThisWeek.map((r: { authorId: string }) => r.authorId));
+  const pendingMembers = activeUsers.filter((u: typeof activeUsers[0]) => !reporterIds.has(u.id));
 
   // Taxa de presença da última reunião
   const lastMeeting = meetings[0];
   let lastPresenceTaxa = null;
   if (lastMeeting) {
-    const total = (lastMeeting as any).attendance.length;
-    const present = (lastMeeting as any).attendance.filter((a: any) => a.present).length;
+    const total = lastMeeting.attendance.length;
+    const present = lastMeeting.attendance.filter((a: Attendance) => a.present).length;
     lastPresenceTaxa = total > 0 ? Math.round((present / total) * 100) : 0;
   }
 
@@ -175,19 +177,21 @@ export default async function DashboardPage() {
           </div>
           <div className="p-6">
             <div className="flex flex-wrap gap-2">
-              {pendingMembers.map((m: any) => (
+              {pendingMembers.map((m: typeof activeUsers[0]) => (
                 <div key={m.id} className="group px-4 py-2 bg-white border border-red-50 rounded-xl shadow-sm hover:border-red-200 transition-all cursor-default">
                   <div className="flex items-center gap-3">
-                    <div className="h-6 w-6 rounded-full bg-slate-100 overflow-hidden">
-                      <img
+                    <div className="h-6 w-6 rounded-full bg-slate-100 overflow-hidden relative">
+                      <Image
                         src={m.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${m.name}`}
                         alt={m.name}
-                        className="h-full w-full object-cover"
+                        fill
+                        unoptimized={true}
+                        className="object-cover"
                       />
                     </div>
                     <span className="text-xs font-bold text-red-700">{m.name}</span>
                     <span className="text-[10px] font-medium text-slate-300">
-                      / {m.userAreas?.map((ua: any) => ua.area?.name.slice(0, 3)).join(', ') || 'NONE'}
+                      / {m.userAreas?.map((ua: UserArea & { area: Area }) => ua.area?.name.slice(0, 3)).join(', ') || 'NONE'}
                     </span>
                   </div>
                 </div>

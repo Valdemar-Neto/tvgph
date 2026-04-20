@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toggleAttendanceAction } from '@/app/actions/manager';
 import { toast } from 'sonner';
@@ -66,13 +67,15 @@ export function AttendanceTable({ attendances }: { attendances: { id: string, pr
                         <TableCell className="p-6">
                            <div className="flex items-center gap-4">
                               <div className={cn(
-                                 "h-12 w-12 rounded-2xl flex items-center justify-center border-2 transition-all duration-300 overflow-hidden shadow-sm",
+                                 "h-12 w-12 rounded-2xl flex items-center justify-center border-2 transition-all duration-300 overflow-hidden shadow-sm relative",
                                  att.present ? "border-emerald-200 bg-emerald-50" : "border-slate-100 bg-slate-50"
                               )}>
-                                 <img
+                                 <Image
                                     src={att.user.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${att.user.name}`}
                                     alt={att.user.name}
-                                    className="h-full w-full object-cover"
+                                    fill
+                                    unoptimized={true}
+                                    className="object-cover"
                                  />
                               </div>
                               <div className="flex flex-col">

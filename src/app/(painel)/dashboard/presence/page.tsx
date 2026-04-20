@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ListChecks, ArrowLeft, ArrowRight, Download, BarChart3 } from 'lucide-react';
 import { CreateMeetingForm } from './components/CreateMeetingForm';
+import { Meeting, Attendance } from '@prisma/client';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
 export const dynamic = 'force-dynamic';
@@ -69,10 +70,10 @@ export default async function PresencePage() {
                 <p>No Meetings Found.</p>
              </div>
           )}
-          {meetings.map((meet: any) => {
+          {meetings.map((meet: Meeting & { attendance: Attendance[] }) => {
              const dataFormatada = new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(meet.date));
              const totalSize = meet.attendance.length;
-             const totalPresent = meet.attendance.filter((a: any) => a.present).length;
+             const totalPresent = meet.attendance.filter((a: Attendance) => a.present).length;
              const taxaPresenca = totalSize > 0 ? ((totalPresent / totalSize) * 100).toFixed(0) : 0;
              
              return (
