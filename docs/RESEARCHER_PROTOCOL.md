@@ -1,40 +1,40 @@
-# GPH Researcher Protocol (Level 1)
+# Protocolo do Pesquisador GPH (Nível 1)
 
-**Role Identification**: Discente / Pesquisador
-**Objective**: Systematic recording of weekly research telemetry and intellectual production.
+**Identificação da Função**: Discente / Pesquisador  
+**Objetivo**: Registro sistemático da telemetria de pesquisa semanal e produção intelectual.
 
 ---
 
-## 1. Identity & Activation
-All laboratory entities must maintain a verified profile to access the Command Center assets.
+## 1. Identidade e Ativação
+Todas as entidades do laboratório devem manter um perfil verificado para acessar os ativos do Centro de Comando.
 
-1. **Registration**: Use your institutional email and define a secure password.
-2. **Security Quarantine**: New profiles are initially **Inactive**. You must wait for a Manager to verify your credentials and assign you to one or more **Research Areas** (Projects, Courses, Events, or Marketing).
-3. **Profile Configuration**: Access **"My Profile"** to update your Avatar and Research Bio.
+1. **Cadastro**: Use seu e-mail institucional e defina uma senha segura.
+2. **Quarentena de Segurança**: Novos perfis são inicialmente **Inativos**. Você deve aguardar que um Gerente verifique suas credenciais e o atribua a uma ou mais **Áreas de Pesquisa** (Projetos, Cursos, Eventos ou Marketing).
+3. **Configuração de Perfil**: Acesse **"Meu Perfil"** para atualizar seu Avatar e Bio de Pesquisa.
 
-## 2. Research Telemetry (The Weekly Report)
-The core of the GPH operation is the **Weekly Research Report**, synchronized with the **ISO Week** standard.
+## 2. Telemetria de Pesquisa (O Relatório Semanal)
+O núcleo da operação do GPH é o **Relatório de Pesquisa Semanal**, sincronizado com o padrão **ISO Week**.
 
-### Submission Workflow
-1. Navigate to **"My Reports"** or click **"New Report"** on the Global Feed.
-2. The system automatically locks the current ISO Week (e.g., `2025-W16`).
-3. **Execution Summary**: Detail your scientific or technical progress. Use Markdown for structured lists or highlights.
-4. **Evidence & Assets**: Attach links to repositories (GitHub), documentation (Notion/Overleaf), or cloud assets that validate your progress.
-5. **Presence Tracking**: Acknowledge your attendance at the weekly synchronization meeting.
+### Fluxo de Trabalho de Submissão
+1. Navegue até **"Meus Relatórios"** ou clique em **"Novo Relatório"** no Feed Global.
+2. O sistema bloqueia automaticamente a semana ISO atual (ex: `2025-W16`).
+3. **Resumo de Execução**: Detalhe seu progresso científico ou técnico. Use Markdown para listas estruturadas ou destaques.
+4. **Evidências e Ativos**: Anexe links para repositórios (GitHub), documentação (Notion/Overleaf) ou ativos em nuvem que validem seu progresso.
+5. **Controle de Presença**: Confirme sua participação na reunião de sincronização semanal.
 
 > [!IMPORTANT]
-> **Editing Lock**: Reports can only be edited during the current ISO Week. Once the week expires or a Manager marks it as **REVIEWED**, the data is frozen for administrative archiving.
+> **Bloqueio de Edição**: Os relatórios só podem ser editados durante a semana ISO atual. Assim que a semana expira ou um Gerente o marca como **REVISADO**, os dados são congelados para arquivamento administrativo.
 
-## 3. Social Engine & Collaboration
-The GPH Laboratory is a collaborative entity. You are encouraged to interact with the **Global Feed**:
-- **Engage**: Use the "Like" feature to acknowledge significant breakthroughs from other researchers.
-- **Synthesize**: Use "Comments" to provide technical feedback or inquire about specific methodologies used in other tracks.
+## 3. Motor Social e Colaboração
+O Laboratório GPH é uma entidade colaborativa. Você é incentivado a interagir com o **Feed Global**:
+- **Engajamento**: Use o recurso "Curtir" para reconhecer avanços significativos de outros pesquisadores.
+- **Síntese**: Use os "Comentários" para fornecer feedback técnico ou questionar sobre metodologias específicas utilizadas em outras frentes.
 
-## 4. Personal Asset History
-Your **"My Reports"** page serves as a persistent record of your technical contributions. This history is vital for:
-- Semi-annual performance reviews.
-- Automatic generation of the laboratory's consolidated annual report.
-- Career progression within the GPH hierarchy.
+## 4. Histórico de Ativos Pessoais
+Sua página **"Meus Relatórios"** serve como um registro persistente de suas contribuições técnicas. Este histórico é vital para:
+- Avaliações de desempenho semestrais.
+- Geração automática do relatório anual consolidado do laboratório.
+- Progressão de carreira dentro da hierarquia do GPH.
 
 ---
-*Authorized by: ROMANO - Main Manager*
+*Autorizado por: ROMANO - Gerente Principal*
