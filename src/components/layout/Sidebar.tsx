@@ -55,7 +55,7 @@ export function Sidebar({ role }: SidebarProps) {
         {/* Brand Logo */}
         <div className="flex flex-col items-center gap-3 mb-10 px-2 transition-all hover:opacity-80">
           <div className="h-20 w-20 bg-white rounded-2xl shadow-xl shadow-slate-200 flex items-center justify-center p-2.5 border border-slate-100 relative">
-            <Image src="/gph-icon.png" alt="GPH Logo" fill className="object-contain p-2" />
+            <Image src="/gph-icon.png" alt="GPH Logo" fill unoptimized className="object-contain p-2" />
           </div>
           <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-[0.3em] block text-center">Hardware Research Group</span>
         </div>

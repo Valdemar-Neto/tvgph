@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +9,6 @@ import { toast } from 'sonner';
 import { User as UserIcon, Mail, Lock, CheckCircle2, ChevronRight, Camera, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRef } from 'react';
 
 interface Area {
   id: string;
@@ -199,7 +198,9 @@ export default function RegistrationPage() {
                   <div className={`h-24 w-24 rounded-2xl border-2 border-dashed flex items-center justify-center overflow-hidden transition-all ${avatarPreview ? 'border-blue-500 ring-4 ring-blue-500/10' : 'border-slate-800 bg-slate-900/50 hover:border-blue-500 hover:bg-slate-900'
                     }`}>
                     {avatarPreview ? (
-                      <img src={avatarPreview} alt="Preview" className="h-full w-full object-cover" />
+                      <div className="h-full w-full relative">
+                        <Image src={avatarPreview} alt="Preview" fill unoptimized={true} className="object-cover" />
+                      </div>
                     ) : (
                       <div className="flex flex-col items-center text-slate-500 group-hover/avatar:text-blue-400">
                         <Camera className="h-8 w-8" />

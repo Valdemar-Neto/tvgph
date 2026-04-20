@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import jwt from 'jsonwebtoken';
+import Image from 'next/image';
 import prisma from '@/lib/prisma';
 import { getISOWeekString, cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -89,11 +90,15 @@ export default async function AttendancePage() {
                   <td className="p-6 border-r border-slate-50">
                     <div className="flex items-center gap-4">
                       <div className="h-10 w-10 rounded-full bg-slate-100 border border-slate-200 overflow-hidden">
-                        <img
-                          src={user.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`}
-                          alt={user.name}
-                          className="h-full w-full object-cover"
-                        />
+                        <div className="h-full w-full relative">
+                          <Image
+                            src={user.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`}
+                            alt={user.name}
+                            fill
+                            unoptimized={true}
+                            className="object-cover"
+                          />
+                        </div>
                       </div>
                       <div className="flex flex-col">
                         <span className="text-sm font-bold text-slate-900">{user.name}</span>

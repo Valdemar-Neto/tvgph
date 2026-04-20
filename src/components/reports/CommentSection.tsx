@@ -120,6 +120,7 @@ export function CommentSection({ reportId, initialComments, currentUserId, curre
                     src={comment.user.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user.name}`}
                     alt={comment.user.name}
                     fill
+                    unoptimized={true}
                     className="object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all"
                   />
                 </div>

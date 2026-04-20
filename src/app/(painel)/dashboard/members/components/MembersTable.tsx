@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { SimpleSelect } from '@/components/ui/simple-select';
@@ -155,11 +156,15 @@ export function MembersTable({ users, areas, currentRole }: { users: User[]; are
                         "h-12 w-12 rounded-2xl flex items-center justify-center border-2 transition-all duration-300 shadow-sm overflow-hidden",
                         user.active ? "border-primary/20 bg-primary/5" : "border-slate-100 bg-slate-50"
                       )}>
-                        <img
-                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`}
-                          alt={user.name}
-                          className="h-full w-full object-cover"
-                        />
+                        <div className="h-full w-full relative">
+                          <Image
+                            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`}
+                            alt={user.name}
+                            fill
+                            unoptimized={true}
+                            className="object-cover"
+                          />
+                        </div>
                       </div>
                       <div className="flex flex-col">
                         <span className={cn(

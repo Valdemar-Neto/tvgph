@@ -188,6 +188,7 @@ export function Header({ userName, avatarUrl, role }: { userName?: string, avata
               src={displayAvatar} 
               alt="User" 
               fill
+              unoptimized={displayAvatar.includes('.svg')}
               className="object-cover" 
             />
           </div>

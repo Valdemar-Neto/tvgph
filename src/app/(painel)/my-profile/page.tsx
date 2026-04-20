@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Pencil, Save, UserCircle, KeyRound, ArrowRight, Camera, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRef } from 'react';
+import Image from 'next/image';
 
 interface UserArea {
   area: {
@@ -199,11 +200,15 @@ export default function MeuPerfilPage() {
           onClick={() => fileInputRef.current?.click()}
         >
           <div className="h-full w-full rounded-full bg-slate-50 border-4 border-white shadow-md ring-1 ring-slate-100 overflow-hidden relative">
-            <img
-              src={avatarPreview || form.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`}
-              alt={user.name}
-              className="h-full w-full object-cover"
-            />
+            <div className="h-full w-full relative">
+              <Image
+                src={avatarPreview || form.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`}
+                alt={user.name}
+                fill
+                unoptimized={true}
+                className="object-cover"
+              />
+            </div>
 
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <Camera className="h-6 w-6 text-white" />

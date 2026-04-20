@@ -191,6 +191,7 @@ export default async function TvgphGlobalFeedPage({
                         src={report.author.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${report.author.name || 'User'}`}
                         alt={report.author.name}
                         fill
+                        unoptimized={true}
                         className="object-cover"
                       />
                     </div>
