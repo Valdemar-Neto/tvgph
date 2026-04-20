@@ -36,7 +36,7 @@ export default async function AttendanceReportPage() {
   const presenceMap = new Map<string, Set<string>>();
   for (const user of users) presenceMap.set(user.id, new Set());
   for (const meeting of meetings) {
-    for (const att of (meeting as any).attendance) {
+    for (const att of (meeting as { id: string; title: string; date: Date; attendance: { userId: string, present: boolean }[] }).attendance) {
       if (att.present) presenceMap.get(att.userId)?.add(meeting.id);
     }
   }
@@ -76,7 +76,7 @@ export default async function AttendanceReportPage() {
                 <th className="text-left px-4 py-3 font-semibold text-muted-foreground sticky left-0 bg-muted/40 min-w-[180px]">
                   Member
                 </th>
-                {meetings.map((m: any) => (
+                {meetings.map((m: { id: string, title: string, date: Date }) => (
                   <th key={m.id} className="px-3 py-3 font-semibold text-muted-foreground text-center min-w-[90px] leading-tight">
                     <div className="text-xs">{new Intl.DateTimeFormat('en-US', { day: '2-digit', month: 'short', timeZone: 'UTC' }).format(new Date(m.date))}</div>
                     <div className="text-[10px] font-normal opacity-70 mt-0.5 truncate max-w-[80px]">{m.title}</div>
@@ -86,13 +86,13 @@ export default async function AttendanceReportPage() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user: any, idx: number) => {
+              {users.map((user: { id: string, name: string }, idx: number) => {
                 const presentSet = presenceMap.get(user.id) || new Set();
                 const taxa = meetings.length > 0 ? Math.round((presentSet.size / meetings.length) * 100) : 0;
                 return (
                   <tr key={user.id} className={idx % 2 === 0 ? 'bg-background' : 'bg-muted/10'}>
                     <td className="px-4 py-3 font-medium sticky left-0 bg-inherit border-r">{user.name}</td>
-                    {meetings.map((m: any) => (
+                    {meetings.map((m: { id: string }) => (
                       <td key={m.id} className="px-3 py-3 text-center text-base">
                         {presentSet.has(m.id) ? '✅' : '❌'}
                       </td>

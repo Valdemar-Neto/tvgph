@@ -16,7 +16,6 @@ export default async function PainelLayout({ children }: { children: React.React
     try {
       const payload = jwt.verify(token, JWT_SECRET) as { role: string, userId: string, name?: string, avatarUrl?: string | null };
       role = payload.role;
-      userId = payload.userId;
       userName = payload.name || 'Member';
       avatarUrl = payload.avatarUrl || null;
     } catch {

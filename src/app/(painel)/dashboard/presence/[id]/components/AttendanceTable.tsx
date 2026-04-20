@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { UserCheck, UserX, Users2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export function AttendanceTable({ attendances }: { attendances: any[] }) {
+export function AttendanceTable({ attendances }: { attendances: { id: string, present: boolean, user: { name: string, email: string, avatarUrl: string | null } }[] }) {
    const totalPresent = attendances.filter(a => a.present).length;
    const totalStudents = attendances.length;
 

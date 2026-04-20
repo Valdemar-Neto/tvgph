@@ -14,6 +14,23 @@ import { Badge } from '@/components/ui/badge';
 import { cn, getISOWeekString, getISOWeekRange } from '@/lib/utils';
 import { ReportCardImage } from '@/components/reports/ReportCardImage';
 import { LikeButton } from '@/components/reports/LikeButton';
+import { ReportStatus, AreaName } from '@prisma/client';
+
+interface ReportWithRelations {
+  id: string;
+  title: string;
+  content: string;
+  status: ReportStatus;
+  createdAt: Date;
+  areaId: string;
+  authorId: string;
+  isoWeek: string;
+  author: { id: string; name: string; avatarUrl: string | null };
+  area: { id: string; name: AreaName } | null;
+  attachments: { id: string; type: string; url: string; filename: string; sizeBytes: number }[];
+  _count: { likes: number; comments: number };
+  likes?: { id: string }[];
+}
 
 const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
 
@@ -110,7 +127,7 @@ export default async function TvgphGlobalFeedPage({
 
       {/* Masonry-like Feed Grid */}
       <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
-        {reports.map((report: any) => {
+        {reports.map((report: ReportWithRelations) => {
           const areaName = (report.area?.name || 'GENERAL').toUpperCase();
           const isProject = areaName.includes('PROJET') || areaName.includes('COORD');
           const isEvent = areaName.includes('EVEN');
@@ -121,7 +138,7 @@ export default async function TvgphGlobalFeedPage({
             <div key={report.id} className="break-inside-avoid group relative bg-white border border-slate-100 rounded-3xl shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300">
               {/* Featured Image Logic */}
               {(() => {
-                const imageAttachment = report.attachments.find((a: any) => a.type === 'IMAGE');
+                const imageAttachment = report.attachments.find((a: { type: string; url: string }) => a.type === 'IMAGE');
                 const featuredUrl = imageAttachment ? imageAttachment.url :
                   isEvent ? "/eventos.png" :
                     isProject ? "/projetos.png" :
@@ -196,7 +213,7 @@ export default async function TvgphGlobalFeedPage({
                     <LikeButton
                       reportId={report.id}
                       initialLikes={report._count.likes}
-                      initialIsLiked={report.likes.length > 0}
+                      initialIsLiked={(report.likes?.length || 0) > 0}
                     />
                   </div>
                 </div>
