@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 
-function RedefinirSenhaForm() {
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
@@ -18,7 +18,7 @@ function RedefinirSenhaForm() {
 
   useEffect(() => {
     if (!token) {
-      toast.error('Token não encontrado no link da url.');
+      toast.error('Token not found in the URL link.');
     }
   }, [token]);
 
@@ -36,55 +36,54 @@ function RedefinirSenhaForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error || 'Erro ao redefinir.');
+        toast.error(data.error || 'Error during reset.');
         setLoading(false);
         return;
       }
 
-      toast.success('Senha trocada! Redirecionando...');
+      toast.success('Password changed! Redirecting...');
       setTimeout(() => router.push('/login'), 2000);
     } catch (err) {
-      toast.error('Ocorreu um problema ao comunicar com o servidor.');
+      toast.error('A problem occurred while communicating with the server.');
       setLoading(false);
     }
   }
 
   if (!token) {
-    return <div className="text-center p-8 text-destructive">Token inválido. Solicite novamente.</div>;
+    return <div className="text-center p-8 text-destructive">Invalid token. Please request again.</div>;
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="password">Nova Senha</Label>
+        <Label htmlFor="password">New Password</Label>
         <Input
           id="password"
           type="password"
-          placeholder="Digite no mínimo 6 caracteres"
+          placeholder="Enter at least 6 characters"
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
       <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? 'Salvando...' : 'Atualizar e Acessar'}
+        {loading ? 'Saving...' : 'Update and Access'}
       </Button>
     </form>
   );
 }
 
-export default function RedefinirSenhaPage() {
+export default function ResetPasswordPage() {
   return (
     <div className="flex h-screen w-full items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="text-2xl">Nova Senha</CardTitle>
-          <CardDescription>Crie uma senha forte para não esquecer novamente!</CardDescription>
+          <CardTitle className="text-2xl">New Password</CardTitle>
+          <CardDescription>Create a strong password so you don't forget it again!</CardDescription>
         </CardHeader>
         <CardContent>
-          {/* Suspense is required when using useSearchParams in Nextjs App router static generation */}
-          <Suspense fallback={<div>Carregando link seguro...</div>}>
-            <RedefinirSenhaForm />
+          <Suspense fallback={<div>Loading secure link...</div>}>
+            <ResetPasswordForm />
           </Suspense>
         </CardContent>
       </Card>

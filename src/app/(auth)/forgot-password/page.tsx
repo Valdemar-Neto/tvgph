@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from 'sonner';
 import Link from 'next/link';
 
-export default function RecuperarSenhaPage() {
+export default function ForgotPasswordPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -27,15 +27,15 @@ export default function RecuperarSenhaPage() {
       });
 
       if (!res.ok) {
-        toast.error('Ocorreu um erro ao processar a solicitação.');
+        toast.error('An error occurred while processing the request.');
         setLoading(false);
         return;
       }
 
       setSuccess(true);
-      toast.success('Link enviado para o seu e-mail!');
+      toast.success('Link sent to your email!');
     } catch (err) {
-      toast.error('Erro de conexão ao enviar e-mail.');
+      toast.error('Connection error while sending email.');
     } finally {
       setLoading(false);
     }
@@ -45,34 +45,34 @@ export default function RecuperarSenhaPage() {
     <div className="flex h-screen w-full items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="text-2xl">Esqueceu a Senha?</CardTitle>
-          <CardDescription>Vamos enviar um link blindado ao seu e-mail de cadastro.</CardDescription>
+          <CardTitle className="text-2xl">Forgot Password?</CardTitle>
+          <CardDescription>We will send a secure link to your registered email.</CardDescription>
         </CardHeader>
         <CardContent>
           {!success ? (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email de Acesso</Label>
+                <Label htmlFor="email">Access Email</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="seuemail@exemplo.com"
+                  placeholder="youremail@example.com"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Buscando conta...' : 'Enviar Link de Resgate'}
+                {loading ? 'Searching account...' : 'Send Recovery Link'}
               </Button>
             </form>
           ) : (
             <div className="text-center py-4 space-y-4">
               <p className="text-sm text-muted-foreground">
-                Se este e-mail ({email}) estiver registrado na plataforma, você receberá o link em breve.
+                If this email ({email}) is registered on the platform, you will receive the link shortly.
               </p>
               <Button variant="outline" className="w-full" onClick={() => router.push('/login')}>
-                Voltar ao Login
+                Back to Login
               </Button>
             </div>
           )}
@@ -80,7 +80,7 @@ export default function RecuperarSenhaPage() {
         {!success && (
           <CardFooter className="flex justify-center border-t p-4">
             <Link href="/login" className="text-sm text-primary hover:underline">
-              Voltar e fazer login
+              Back to Login
             </Link>
           </CardFooter>
         )}
