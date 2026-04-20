@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Bell, HelpCircle, ChevronDown, Clock, MousePointer2, X as CloseIcon } from 'lucide-react';
+import { Search, Bell, Clock, MousePointer2, X as CloseIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { getPendingReportsAction } from '@/app/actions/manager';

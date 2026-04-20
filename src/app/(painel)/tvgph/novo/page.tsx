@@ -35,7 +35,7 @@ export default function NewReportPage() {
   const [userAreas, setUserAreas] = useState<UserArea[]>([]);
   const [selectedArea, setSelectedArea] = useState<string>('');
   const [reportTitle, setReportTitle] = useState('');
-  const [isoWeek, setIsoWeek] = useState(getCurrentIsoWeek());
+  const [isoWeek] = useState(getCurrentIsoWeek());
   
   const [filesToUpload, setFilesToUpload] = useState<UploadableFile[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -65,7 +65,7 @@ export default function NewReportPage() {
           setUserAreas(data.user.userAreas);
           setSelectedArea(data.user.userAreas[0].areaId);
         }
-      } catch (err) {
+      } catch {
         toast.error('Communication failed.');
       } finally {
         setLoadingContext(false);
@@ -142,7 +142,7 @@ export default function NewReportPage() {
                 xhr.onerror = () => reject();
                 xhr.send(file);
             });
-        } catch(err) {
+        } catch {
             toast.error(`Failed to upload attachment: ${file.name}`);
             setIsSubmitting(false);
             return;
@@ -174,7 +174,7 @@ export default function NewReportPage() {
             toast.error(dataRes.error || 'Error saving to database.');
         }
 
-    } catch (error) {
+    } catch {
         toast.error('General error submitting report. Server might be unavailable.');
     } finally {
         setIsSubmitting(false);

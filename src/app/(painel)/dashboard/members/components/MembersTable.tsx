@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { SimpleSelect } from '@/components/ui/simple-select';
 import { updateUserRoleAction, approveUserAction } from '@/app/actions/manager';
@@ -23,68 +22,68 @@ interface User {
 }
 
 export function MembersTable({ users, areas, currentRole }: { users: User[]; areas: Area[]; currentRole: string }) {
-   const [approveTarget, setApproveTarget] = useState<User | null>(null);
-   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
-   const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [approveTarget, setApproveTarget] = useState<User | null>(null);
+  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
 
-   const sorted = [...users].sort((a, b) => {
-     if (!a.active && b.active) return -1;
-     if (a.active && !b.active) return 1;
-     return 0;
-   });
+  const sorted = [...users].sort((a, b) => {
+    if (!a.active && b.active) return -1;
+    if (a.active && !b.active) return 1;
+    return 0;
+  });
 
-   function toggleArea(areaId: string) {
-     setSelectedAreas(prev =>
-       prev.includes(areaId) ? prev.filter(id => id !== areaId) : [...prev, areaId]
-     );
-   }
+  function toggleArea(areaId: string) {
+    setSelectedAreas(prev =>
+      prev.includes(areaId) ? prev.filter(id => id !== areaId) : [...prev, areaId]
+    );
+  }
 
-   async function handleToggleStatus(userId: string, currentActive: boolean, role: string) {
-      const res = await updateUserRoleAction(userId, !currentActive, role as any);
-      if (res.error) toast.error(res.error);
-      else toast.success(currentActive ? 'Member deactivated.' : 'Member reactivated!');
-   }
+  async function handleToggleStatus(userId: string, currentActive: boolean, role: string) {
+    const res = await updateUserRoleAction(userId, !currentActive, role as 'MEMBER' | 'MANAGER' | 'PROFESSOR');
+    if (res.error) toast.error(res.error);
+    else toast.success(currentActive ? 'Member deactivated.' : 'Member reactivated!');
+  }
 
-   async function handleToggleRole(userId: string, active: boolean, newRole: string) {
-      const res = await updateUserRoleAction(userId, active, newRole as any);
-      if (res.error) toast.error(res.error);
-      else toast.success(`Permission changed to ${newRole}.`);
-   }
+  async function handleToggleRole(userId: string, active: boolean, newRole: string) {
+    const res = await updateUserRoleAction(userId, active, newRole as 'MEMBER' | 'MANAGER' | 'PROFESSOR');
+    if (res.error) toast.error(res.error);
+    else toast.success(`Permission changed to ${newRole}.`);
+  }
 
-   async function handleDeleteUser(user: User) {
-      if (!confirm(`Are you sure you want to PERMANENTLY DELETE the researcher ${user.name}? This action cannot be undone.`)) return;
-      
-      const res = await deleteUserAction(user.id);
-      if (res.error) toast.error(res.error);
-      else toast.success('User successfully removed from database.');
-   }
+  async function handleDeleteUser(user: User) {
+    if (!confirm(`Are you sure you want to PERMANENTLY DELETE the researcher ${user.name}? This action cannot be undone.`)) return;
 
-   async function handleApprove() {
-      if (!approveTarget || selectedAreas.length === 0) {
-        toast.error('Select at least one area before approving.');
-        return;
-      }
-      setApprovingId(approveTarget.id);
-      const res = await approveUserAction(approveTarget.id, selectedAreas);
-      if (res.error) {
-        toast.error(res.error);
-      } else {
-        toast.success(`${approveTarget.name} approved successfully!`);
-        setApproveTarget(null);
-        setSelectedAreas([]);
-      }
-      setApprovingId(null);
-   }
+    const res = await deleteUserAction(user.id);
+    if (res.error) toast.error(res.error);
+    else toast.success('User successfully removed from database.');
+  }
 
-   function closeModal() {
-     setApproveTarget(null);
-     setSelectedAreas([]);
-   }
+  async function handleApprove() {
+    if (!approveTarget || selectedAreas.length === 0) {
+      toast.error('Select at least one area before approving.');
+      return;
+    }
+    setApprovingId(approveTarget.id);
+    const res = await approveUserAction(approveTarget.id, selectedAreas);
+    if (res.error) {
+      toast.error(res.error);
+    } else {
+      toast.success(`${approveTarget.name} approved successfully!`);
+      setApproveTarget(null);
+      setSelectedAreas([]);
+    }
+    setApprovingId(null);
+  }
 
-   const pendingCount = users.filter(u => !u.active).length;
+  function closeModal() {
+    setApproveTarget(null);
+    setSelectedAreas([]);
+  }
 
-   return (
-      <>
+  const pendingCount = users.filter(u => !u.active).length;
+
+  return (
+    <>
       <div className="space-y-8">
         {/* RH Telemetry Summary */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -143,10 +142,10 @@ export function MembersTable({ users, areas, currentRole }: { users: User[]; are
                   key={user.id}
                   className={cn(
                     "transition-all duration-300",
-                    !user.active 
-                      ? user.userAreas.length === 0 
-                        ? 'bg-amber-50/30' 
-                        : 'bg-slate-50/30 opacity-60 grayscale-[0.5]' 
+                    !user.active
+                      ? user.userAreas.length === 0
+                        ? 'bg-amber-50/30'
+                        : 'bg-slate-50/30 opacity-60 grayscale-[0.5]'
                       : 'bg-white opacity-100'
                   )}
                 >
@@ -195,7 +194,7 @@ export function MembersTable({ users, areas, currentRole }: { users: User[]; are
                   </TableCell>
                   <TableCell className="p-6">
                     {user.active ? (
-                       <SimpleSelect
+                      <SimpleSelect
                         value={user.role}
                         options={[
                           { label: 'Member', value: 'MEMBER' },
@@ -214,7 +213,7 @@ export function MembersTable({ users, areas, currentRole }: { users: User[]; are
                   </TableCell>
                   <TableCell className="p-6 text-right">
                     <div className="flex items-center justify-end gap-2">
-                       {!user.active ? (
+                      {!user.active ? (
                         <Button
                           size="sm"
                           className="h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[9px] bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-200 gap-2"
@@ -225,13 +224,13 @@ export function MembersTable({ users, areas, currentRole }: { users: User[]; are
                         </Button>
                       ) : (
                         <>
-                           <Button
+                          <Button
                             variant="outline"
                             size="sm"
                             className={cn(
                               "h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all duration-300 border-2",
-                              user.active 
-                                ? "border-emerald-100 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:border-emerald-200" 
+                              user.active
+                                ? "border-emerald-100 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:border-emerald-200"
                                 : "border-slate-100 text-slate-300"
                             )}
                             onClick={() => handleToggleStatus(user.id, user.active, user.role)}
@@ -241,9 +240,9 @@ export function MembersTable({ users, areas, currentRole }: { users: User[]; are
                           </Button>
 
                           {currentRole === 'PROFESSOR' && (
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
+                            <Button
+                              variant="ghost"
+                              size="icon"
                               className="h-10 w-10 rounded-xl text-rose-300 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                               onClick={() => handleDeleteUser(user)}
                               title="Permanently delete"
@@ -321,15 +320,13 @@ export function MembersTable({ users, areas, currentRole }: { users: User[]; are
                         key={area.id}
                         type="button"
                         onClick={() => toggleArea(area.id)}
-                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border text-sm font-medium text-left transition-all duration-150 ${
-                          checked
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border text-sm font-medium text-left transition-all duration-150 ${checked
                             ? 'bg-primary text-primary-foreground border-primary shadow-sm'
                             : 'bg-background border-border hover:border-primary/50 hover:bg-muted/40'
-                        }`}
+                          }`}
                       >
-                        <div className={`h-4 w-4 rounded border flex-shrink-0 flex items-center justify-center transition-colors ${
-                          checked ? 'bg-primary-foreground border-primary-foreground' : 'border-muted-foreground/40'
-                        }`}>
+                        <div className={`h-4 w-4 rounded border flex-shrink-0 flex items-center justify-center transition-colors ${checked ? 'bg-primary-foreground border-primary-foreground' : 'border-muted-foreground/40'
+                          }`}>
                           {checked && <Check className="h-3 w-3 text-primary" />}
                         </div>
                         {area.name}

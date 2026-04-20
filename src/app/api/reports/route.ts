@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
-import jwt from 'jsonwebtoken';
-import { cookies } from 'next/headers';
 
 import { getAuthSession } from '@/lib/auth';
 

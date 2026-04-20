@@ -3,10 +3,7 @@ import { redirect, notFound } from 'next/navigation';
 import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
-
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, MonitorPlay, FileText, Image as ImageIcon, Download, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ReviewButton } from './components/ReviewButton';
@@ -142,7 +139,7 @@ export default async function ReportDetailPage({ params }: { params: { id: strin
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {report.attachments.map((att: any) => (
+            {report.attachments.map((att: { id: string, type: string, filename: string, url: string, sizeBytes: number }) => (
               <div key={att.id} className="circuit-border bg-card overflow-hidden">
                 <div className="p-4 border-b border-border bg-muted/5 flex items-center justify-between">
                   <span className="text-[10px] font-bold uppercase tracking-wider truncate mr-4 flex items-center">

@@ -4,7 +4,6 @@ import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toggleAttendanceAction } from '@/app/actions/manager';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { UserCheck, UserX, Users2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -36,7 +35,7 @@ export function AttendanceTable({ attendances }: { attendances: any[] }) {
                   </p>
                </div>
             </div>
-            
+
             <div className="flex gap-2">
                <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-slate-100 shadow-sm">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -57,8 +56,8 @@ export function AttendanceTable({ attendances }: { attendances: any[] }) {
                </TableHeader>
                <TableBody>
                   {attendances.map(att => (
-                     <TableRow 
-                        key={att.id} 
+                     <TableRow
+                        key={att.id}
                         className={cn(
                            "transition-all duration-300",
                            !att.present ? "bg-slate-50/30 opacity-60 grayscale-[0.5]" : "bg-white opacity-100"
@@ -116,8 +115,8 @@ export function AttendanceTable({ attendances }: { attendances: any[] }) {
                                  size="sm"
                                  className={cn(
                                     "px-4 h-10 rounded-xl font-black uppercase tracking-widest text-[9px] transition-all duration-300",
-                                    att.present 
-                                       ? "bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-200" 
+                                    att.present
+                                       ? "bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-200"
                                        : "border-slate-100 text-slate-300 hover:text-emerald-500 hover:border-emerald-200"
                                  )}
                                  onClick={() => att.present ? null : handleToggle(att.id, true, att.user.name)}

@@ -43,7 +43,7 @@ function ResetPasswordForm() {
 
       toast.success('Password changed! Redirecting...');
       setTimeout(() => router.push('/login'), 2000);
-    } catch (err) {
+    } catch {
       toast.error('A problem occurred while communicating with the server.');
       setLoading(false);
     }

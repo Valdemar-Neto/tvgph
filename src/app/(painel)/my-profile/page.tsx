@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { Pencil, X, Save, User, Mail, ShieldCheck, MapPin, UserCircle, KeyRound, ArrowRight, Camera, Loader2 } from 'lucide-react';
+import { Pencil, Save, UserCircle, KeyRound, ArrowRight, Camera, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRef } from 'react';
 
@@ -46,8 +45,8 @@ export default function MeuPerfilPage() {
         const data = await res.json();
         if (res.ok) {
           setUser(data.user);
-          setForm({ 
-            name: data.user.name || '', 
+          setForm({
+            name: data.user.name || '',
             bio: data.user.bio || '',
             avatarUrl: data.user.avatarUrl || ''
           });
@@ -77,7 +76,7 @@ export default function MeuPerfilPage() {
       setAvatarPreview(reader.result as string);
     };
     reader.readAsDataURL(file);
-    
+
     uploadAvatar(file);
   };
 
@@ -87,13 +86,13 @@ export default function MeuPerfilPage() {
       const presignRes = await fetch('/api/reports/presign', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          filename: `avatars/${Date.now()}-${file.name}`, 
+        body: JSON.stringify({
+          filename: `avatars/${Date.now()}-${file.name}`,
           contentType: file.type,
-          isAvatar: true 
+          isAvatar: true
         })
       });
-      
+
       const presignData = await presignRes.json();
       if (!presignRes.ok) throw new Error(presignData.error);
 
@@ -147,8 +146,8 @@ export default function MeuPerfilPage() {
 
   function handleCancel() {
     if (!user) return;
-    setForm({ 
-      name: user.name || '', 
+    setForm({
+      name: user.name || '',
       bio: user.bio || '',
       avatarUrl: user.avatarUrl || ''
     });
@@ -160,11 +159,11 @@ export default function MeuPerfilPage() {
     return (
       <div className="space-y-8 animate-pulse max-w-3xl">
         <div className="flex items-center gap-6">
-           <div className="h-20 w-20 rounded-full bg-slate-100" />
-           <div className="space-y-3">
-              <div className="h-6 w-48 bg-slate-100 rounded-lg" />
-              <div className="h-4 w-32 bg-slate-100 rounded-lg" />
-           </div>
+          <div className="h-20 w-20 rounded-full bg-slate-100" />
+          <div className="space-y-3">
+            <div className="h-6 w-48 bg-slate-100 rounded-lg" />
+            <div className="h-4 w-32 bg-slate-100 rounded-lg" />
+          </div>
         </div>
         <div className="h-64 rounded-3xl bg-slate-50 border border-slate-100" />
       </div>
@@ -173,7 +172,7 @@ export default function MeuPerfilPage() {
 
   if (!user) return <div className="p-8 text-slate-500 font-medium">No profile data found.</div>;
 
-  const areas = user.userAreas?.map((ua: any) => ua.area.name) || [];
+  const areas = user.userAreas?.map((ua: { area: { name: string } }) => ua.area.name) || [];
 
   return (
     <div className="max-w-3xl space-y-10">
@@ -195,19 +194,19 @@ export default function MeuPerfilPage() {
       {/* Identity Card */}
       <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group">
 
-        <div 
+        <div
           className="relative group cursor-pointer h-24 w-24 flex-shrink-0"
           onClick={() => fileInputRef.current?.click()}
         >
           <div className="h-full w-full rounded-full bg-slate-50 border-4 border-white shadow-md ring-1 ring-slate-100 overflow-hidden relative">
-            <img 
-              src={avatarPreview || form.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`} 
-              alt={user.name} 
-              className="h-full w-full object-cover" 
+            <img
+              src={avatarPreview || form.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`}
+              alt={user.name}
+              className="h-full w-full object-cover"
             />
-            
+
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-               <Camera className="h-6 w-6 text-white" />
+              <Camera className="h-6 w-6 text-white" />
             </div>
 
             {isUploading && (
@@ -216,17 +215,17 @@ export default function MeuPerfilPage() {
               </div>
             )}
           </div>
-          
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            className="hidden" 
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
             accept="image/*"
             onChange={handleAvatarSelect}
           />
 
           <div className="absolute -bottom-1 -right-1 bg-primary text-white p-1.5 rounded-full shadow-lg border-2 border-white">
-             <Pencil className="h-3 w-3" />
+            <Pencil className="h-3 w-3" />
           </div>
         </div>
 
@@ -241,7 +240,7 @@ export default function MeuPerfilPage() {
             </Badge>
           </div>
           <p className="text-slate-400 font-medium">{user.email}</p>
-          
+
           <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-4">
             <Badge variant="outline" className="bg-white border-slate-200 text-slate-500 font-bold px-2 rounded-lg">
               ROLE: {user.role === 'PROFESSOR' ? 'Main Manager' : user.role}
@@ -262,7 +261,7 @@ export default function MeuPerfilPage() {
             <h3 className="text-lg font-bold text-slate-900">Personal Information</h3>
             <p className="text-xs font-medium text-slate-500 uppercase tracking-widest mt-0.5">PUBLIC_RESEARCH_METADATA</p>
           </div>
-          
+
           {!editing ? (
             <Button variant="outline" className="rounded-xl h-10 border-slate-100 bg-white shadow-sm font-bold text-slate-600 gap-2 px-5 hover:bg-slate-50" onClick={() => setEditing(true)}>
               <Pencil className="h-4 w-4" /> Edit Profile
@@ -321,17 +320,17 @@ export default function MeuPerfilPage() {
       {/* Security Section */}
       <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-5">
-           <div className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400">
-              <KeyRound className="h-6 w-6" />
-           </div>
-           <div>
-              <h3 className="text-lg font-bold text-slate-900 leading-tight">Security Credentials</h3>
-              <p className="text-sm font-medium text-slate-400 mt-0.5">Manage your private encryption keys and access password.</p>
-           </div>
+          <div className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400">
+            <KeyRound className="h-6 w-6" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-slate-900 leading-tight">Security Credentials</h3>
+            <p className="text-sm font-medium text-slate-400 mt-0.5">Manage your private encryption keys and access password.</p>
+          </div>
         </div>
-        
+
         <Button variant="outline" className="rounded-xl h-12 border-slate-100 bg-white shadow-sm font-bold text-primary gap-2 px-6 hover:bg-slate-50" onClick={() => window.location.href = '/forgot-password'}>
-           Redefine Access Key <ArrowRight className="h-4 w-4" />
+          Redefine Access Key <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
     </div>

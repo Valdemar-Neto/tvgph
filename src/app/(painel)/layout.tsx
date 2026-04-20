@@ -1,17 +1,14 @@
 import React from 'react';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
-import prisma from '@/lib/prisma';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
-import { getISOWeekString } from '@/lib/utils';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
 
 export default async function PainelLayout({ children }: { children: React.ReactNode }) {
   const token = cookies().get('auth_token')?.value;
   let role = 'MEMBER';
-  let userId = '';
   let userName = '';
   let avatarUrl: string | null = null;
   
@@ -22,29 +19,16 @@ export default async function PainelLayout({ children }: { children: React.React
       userId = payload.userId;
       userName = payload.name || 'Member';
       avatarUrl = payload.avatarUrl || null;
-    } catch (e) {
+    } catch {
       // Falha ao verifcar token
     }
-  }
-
-  // Verificar se usuário submeteu report na atual semana ISO
-  let hasReportedThisWeek = true; 
-  if (userId && role === 'MEMBER') {
-     const currentStr = getISOWeekString(new Date());
-     const count = await prisma.report.count({
-        where: {
-           authorId: userId,
-           isoWeek: currentStr
-        }
-     });
-     hasReportedThisWeek = count > 0;
   }
 
   return (
     <div className="flex h-screen w-full bg-slate-50">
       
       {/* Sidebar Inteligente Client Component */}
-      <Sidebar role={role} hasReportedThisWeek={hasReportedThisWeek} />
+      <Sidebar role={role} />
 
       {/* Main Container */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">

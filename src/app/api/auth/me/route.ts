@@ -34,7 +34,7 @@ export async function GET() {
 
     return NextResponse.json({ user }, { status: 200 });
 
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
   }
 }
@@ -62,7 +62,7 @@ export async function PATCH(req: Request) {
     });
 
     return NextResponse.json({ user: updated }, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Error updating profile' }, { status: 500 });
   }
 }

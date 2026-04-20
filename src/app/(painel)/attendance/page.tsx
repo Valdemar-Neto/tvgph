@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
 import { getISOWeekString, cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { UserCheck, UserX, AlertTriangle, ShieldCheck, Clock, CheckCircle2 } from 'lucide-react';
+import { UserX, ShieldCheck, Clock, CheckCircle2 } from 'lucide-react';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
 
@@ -98,7 +98,7 @@ export default async function AttendancePage() {
                       <div className="flex flex-col">
                         <span className="text-sm font-bold text-slate-900">{user.name}</span>
                         <div className="flex flex-wrap gap-1 mt-1">
-                          {user.userAreas.map((ua: any) => (
+                          {user.userAreas.map((ua: { area: { id: string, name: string } }) => (
                             <Badge key={ua.area.id} variant="secondary" className="px-1.5 py-0 text-[9px] bg-slate-100 text-slate-500 rounded font-bold uppercase tracking-tighter">
                               {ua.area.name.slice(0, 8)}
                             </Badge>

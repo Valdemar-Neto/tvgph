@@ -21,7 +21,7 @@ export async function GET() {
     const lines: string[] = ['Meeting,Date,Member,Email,Present'];
     for (const meeting of meetings) {
       const dateStr = new Intl.DateTimeFormat('en-US', { dateStyle: 'short', timeZone: 'UTC' }).format(new Date(meeting.date));
-      for (const att of (meeting as any).attendance) {
+      for (const att of (meeting as { attendance: Array<{ present: boolean; user: { name: string; email: string } }> }).attendance) {
         const present = att.present ? 'Yes' : 'No';
         // Escape quotes in text fields
         const title = `"${meeting.title.replace(/"/g, '""')}"`;
@@ -39,7 +39,7 @@ export async function GET() {
         'Content-Disposition': `attachment; filename="attendance-tvgph-${new Date().toISOString().slice(0, 10)}.csv"`,
       },
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Error generating report' }, { status: 500 });
   }
 }

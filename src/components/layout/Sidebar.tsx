@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   GraduationCap,
-  FlaskConical,
   Calendar,
   Megaphone,
   Settings,
@@ -20,10 +19,9 @@ import { toast } from 'sonner';
 
 interface SidebarProps {
   role: string;
-  hasReportedThisWeek: boolean;
 }
 
-export function Sidebar({ role, hasReportedThisWeek }: SidebarProps) {
+export function Sidebar({ role }: SidebarProps) {
   const pathname = usePathname();
 
   async function handleLogout() {
@@ -31,8 +29,8 @@ export function Sidebar({ role, hasReportedThisWeek }: SidebarProps) {
       await fetch('/api/auth/logout', { method: 'POST' });
       toast.success('Disconnected from Laboratory');
       window.location.href = '/login';
-    } catch (error) {
-      toast.error('Failed to log out');
+    } catch {
+      // Silenciar erro de carregamento inicial do sidebar
     }
   }
 

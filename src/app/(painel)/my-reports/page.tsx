@@ -4,14 +4,10 @@ import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import {
-  FileText,
-  Paperclip,
-  CalendarDays,
   CalendarClock,
   Pencil,
   FlaskConical,
   Plus,
-  Trash2,
   Clock,
   CheckCircle2,
   Lock

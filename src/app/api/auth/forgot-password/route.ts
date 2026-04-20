@@ -44,7 +44,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ message: 'If the email exists, a link has been sent.' }, { status: 200 });
 
-  } catch (error) {
-    return NextResponse.json({ error: 'Error processing request.' }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Falha ao enviar e-mail de recuperação.' }, { status: 500 });
   }
 }

@@ -57,8 +57,7 @@ export async function POST(req: Request) {
       user: { id: user.id, name: user.name, email: user.email } 
     }, { status: 201 });
 
-  } catch (error) {
-    console.error('Registration Error:', error);
-    return NextResponse.json({ error: 'Internal error processing registration' }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Erro ao registrar usuário' }, { status: 500 });
   }
 }

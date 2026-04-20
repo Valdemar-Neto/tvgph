@@ -4,17 +4,10 @@ import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import {
-  FileText,
-  Paperclip,
-  CalendarDays,
-  ExternalLink,
   AlertCircle,
   MessageSquare,
-  Heart,
   ChevronDown,
-  Clock,
-  MoreHorizontal,
-  Plus
+  Clock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -40,7 +33,7 @@ export default async function TvgphGlobalFeedPage({
 
   let userId = '';
   try {
-    const payload = jwt.verify(token, JWT_SECRET) as any;
+    const payload = jwt.verify(token, JWT_SECRET) as { userId: string };
     userId = payload.userId;
   } catch {
     redirect('/login');
@@ -200,10 +193,10 @@ export default async function TvgphGlobalFeedPage({
                       </div>
                     </Link>
 
-                    <LikeButton 
-                      reportId={report.id} 
-                      initialLikes={report._count.likes} 
-                      initialIsLiked={report.likes.length > 0} 
+                    <LikeButton
+                      reportId={report.id}
+                      initialLikes={report._count.likes}
+                      initialIsLiked={report.likes.length > 0}
                     />
                   </div>
                 </div>

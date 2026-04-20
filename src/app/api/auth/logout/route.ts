@@ -8,7 +8,7 @@ export async function POST() {
     cookieStore.delete('auth_token');
 
     return NextResponse.json({ message: 'Logged out successfully' }, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to log out' }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Error logging out' }, { status: 500 });
   }
 }

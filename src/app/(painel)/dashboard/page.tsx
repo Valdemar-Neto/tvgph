@@ -3,15 +3,14 @@ import { redirect } from 'next/navigation';
 import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
-import { 
-  Users, 
-  FileText, 
-  Activity, 
-  ShieldAlert, 
-  AlertTriangle, 
-  CheckCircle2, 
+import {
+  Users,
+  FileText,
+  Activity,
+  ShieldAlert,
+  AlertTriangle,
+  CheckCircle2,
   Download,
-  LayoutDashboard,
   Users2,
   CalendarCheck
 } from 'lucide-react';
@@ -42,14 +41,14 @@ export default async function DashboardPage() {
     prisma.report.count(),
     prisma.report.count({ where: { isoWeek: currentWeek } }),
     prisma.area.findMany(),
-    prisma.user.findMany({ 
-      where: { active: true }, 
-      select: { 
-        id: true, 
+    prisma.user.findMany({
+      where: { active: true },
+      select: {
+        id: true,
         name: true,
         avatarUrl: true,
         userAreas: { include: { area: true } }
-      } 
+      }
     }),
     prisma.meeting.findMany({
       orderBy: { date: 'desc' },
@@ -61,11 +60,11 @@ export default async function DashboardPage() {
   // Dados para gráfico de barras (reports por área)
   const reportsData = await Promise.all(
     areas.map(async (area: any) => {
-      const total = await prisma.report.count({ 
-        where: { 
+      const total = await prisma.report.count({
+        where: {
           areaId: area.id,
           isoWeek: currentWeek
-        } 
+        }
       });
       return { area: area.name, total };
     })
@@ -113,7 +112,7 @@ export default async function DashboardPage() {
             Centralized intelligence and analytics orchestration for monitoring squad performance and research delivery.
           </p>
         </div>
-        
+
         <div className="flex gap-4">
           <Link href="/dashboard/members">
             <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-100 bg-white shadow-sm font-bold text-slate-600 gap-2">
@@ -136,10 +135,10 @@ export default async function DashboardPage() {
           { label: 'Active Entities', value: totalUsers, icon: Users, sub: 'Verified members' },
           { label: 'Weekly Packets', value: totalReportsThisWeek, icon: FileText, sub: `Of ${totalReports} Total` },
           { label: 'Presence Sync', value: lastPresenceTaxa !== null ? `${lastPresenceTaxa}%` : '---', icon: Activity, sub: 'Latest session' },
-          { 
-            label: 'Alert Stack', 
-            value: pendingMembers.length, 
-            icon: pendingMembers.length > 0 ? AlertTriangle : CheckCircle2, 
+          {
+            label: 'Alert Stack',
+            value: pendingMembers.length,
+            icon: pendingMembers.length > 0 ? AlertTriangle : CheckCircle2,
             sub: pendingMembers.length === 0 ? 'All TX Received' : 'Pending submissions',
             color: pendingMembers.length > 0 ? 'text-red-500' : 'text-emerald-500',
             bg: pendingMembers.length > 0 ? 'bg-red-50' : 'bg-emerald-50'
@@ -179,17 +178,17 @@ export default async function DashboardPage() {
               {pendingMembers.map((m: any) => (
                 <div key={m.id} className="group px-4 py-2 bg-white border border-red-50 rounded-xl shadow-sm hover:border-red-200 transition-all cursor-default">
                   <div className="flex items-center gap-3">
-                      <div className="h-6 w-6 rounded-full bg-slate-100 overflow-hidden">
-                        <img 
-                          src={m.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${m.name}`} 
-                          alt={m.name}
-                          className="h-full w-full object-cover" 
-                        />
-                      </div>
-                     <span className="text-xs font-bold text-red-700">{m.name}</span>
-                     <span className="text-[10px] font-medium text-slate-300">
-                       / {m.userAreas?.map((ua: any) => ua.area?.name.slice(0, 3)).join(', ') || 'NONE'}
-                     </span>
+                    <div className="h-6 w-6 rounded-full bg-slate-100 overflow-hidden">
+                      <img
+                        src={m.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${m.name}`}
+                        alt={m.name}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <span className="text-xs font-bold text-red-700">{m.name}</span>
+                    <span className="text-[10px] font-medium text-slate-300">
+                      / {m.userAreas?.map((ua: any) => ua.area?.name.slice(0, 3)).join(', ') || 'NONE'}
+                    </span>
                   </div>
                 </div>
               ))}

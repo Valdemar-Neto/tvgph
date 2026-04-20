@@ -46,7 +46,7 @@ export async function toggleLikeAction(reportId: string) {
     revalidatePath('/tvgph');
     revalidatePath(`/tvgph/${reportId}`);
     return { success: true, liked: !existingLike };
-  } catch (err: any) {
+  } catch {
     return { error: 'Failed to process reaction.' };
   }
 }
@@ -75,7 +75,7 @@ export async function postCommentAction(reportId: string, content: string) {
 
     revalidatePath(`/tvgph/${reportId}`);
     return { success: true };
-  } catch (err: any) {
+  } catch {
     return { error: 'Failed to post comment.' };
   }
 }
@@ -105,7 +105,7 @@ export async function deleteCommentAction(commentId: string) {
 
     revalidatePath(`/tvgph/${comment.reportId}`);
     return { success: true };
-  } catch (err: any) {
+  } catch {
     return { error: 'Failed to delete comment.' };
   }
 }

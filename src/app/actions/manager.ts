@@ -58,8 +58,8 @@ export async function createMeetingAction(formData: FormData) {
 
     revalidatePath('/dashboard/presence');
     return { success: true };
-  } catch (err: any) {
-    return { error: err.message };
+  } catch (err: unknown) {
+    return { error: (err as Error).message };
   }
 }
 
@@ -100,7 +100,7 @@ export async function deleteUserAction(userId: string) {
     await prisma.user.delete({ where: { id: userId } });
     revalidatePath('/dashboard/members');
     return { success: true };
-  } catch (err: any) {
+  } catch {
     return { error: 'Error deleting member. Ensure they have no linked records.' };
   }
 }
@@ -122,8 +122,8 @@ export async function approveUserAction(userId: string, areaIds: string[]) {
 
     revalidatePath('/dashboard/members');
     return { success: true };
-  } catch (e: any) {
-    return { error: e.message || 'Error approving member.' };
+  } catch (e: unknown) {
+    return { error: (e as Error).message || 'Error approving member.' };
   }
 }
 
@@ -141,7 +141,7 @@ export async function reviewReportAction(reportId: string) {
     revalidatePath('/dashboard');
     revalidatePath(`/tvgph/${reportId}`);
     return { success: true };
-  } catch (e: any) {
+  } catch {
     return { error: 'Failed to update report status.' };
   }
 }
@@ -158,7 +158,7 @@ export async function reopenReportAction(reportId: string) {
     revalidatePath('/tvgph');
     revalidatePath(`/tvgph/${reportId}`);
     return { success: true };
-  } catch (e: any) {
+  } catch {
     return { error: 'Failed to reopen report.' };
   }
 }
@@ -172,7 +172,7 @@ export async function deleteAreaAction(areaId: string) {
     await prisma.area.delete({ where: { id: areaId } });
     revalidatePath('/dashboard');
     return { success: true };
-  } catch (err: any) {
+  } catch {
     return { error: 'Error deleting area. Check if there are members or reports linked to it.' };
   }
 }

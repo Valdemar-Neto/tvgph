@@ -28,7 +28,7 @@ export async function PATCH(
 
     return NextResponse.json({ message: 'Usuário aprovado com sucesso!', user: updatedUser }, { status: 200 });
 
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Falha na validação ou usuário não encontrado.' }, { status: 500 });
   }
 }
