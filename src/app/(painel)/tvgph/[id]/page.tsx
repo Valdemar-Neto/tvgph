@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, MonitorPlay, FileText, Image as ImageIcon, Download, ExternalLink } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { ReviewButton } from './components/ReviewButton';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
 
@@ -15,8 +17,10 @@ export default async function DetalheReportPage({ params }: { params: { id: stri
   const token = cookies().get('auth_token')?.value;
   if (!token) redirect('/login');
 
+  let role = 'MEMBER';
   try {
-    jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, JWT_SECRET) as { role: string };
+    role = payload.role;
   } catch {
     redirect('/login');
   }
@@ -37,11 +41,17 @@ export default async function DetalheReportPage({ params }: { params: { id: stri
 
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-6">
-      <Link href="/tvgph">
-        <Button variant="ghost" size="sm" className="mb-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 -ml-2">
-          <ArrowLeft className="h-4 w-4 mr-2" /> Voltar ao Feed
-        </Button>
-      </Link>
+      <div className="flex items-center justify-between gap-4">
+        <Link href="/tvgph">
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground hover:bg-muted/50 -ml-2">
+            <ArrowLeft className="h-4 w-4 mr-2" /> Voltar ao Feed
+          </Button>
+        </Link>
+        
+        {role === 'MANAGER' && report.status === 'SUBMITTED' && (
+          <ReviewButton reportId={report.id} />
+        )}
+      </div>
 
       <Card className="border-border shadow-sm">
         <CardHeader className="bg-muted/20 border-b pb-6">
@@ -58,8 +68,14 @@ export default async function DetalheReportPage({ params }: { params: { id: stri
              </div>
              <div className="md:text-right">
                 <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold mb-1">Status de Fluxo</p>
-                <Badge variant={report.status === 'SUBMITTED' ? 'default' : 'secondary'} className="text-xs uppercase">
-                  {report.status}
+                <Badge 
+                  variant={report.status === 'SUBMITTED' ? 'default' : 'secondary'} 
+                  className={cn(
+                    "text-xs uppercase",
+                    report.status === 'REVIEWED' && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200"
+                  )}
+                >
+                  {report.status === 'REVIEWED' ? 'Revisado' : report.status}
                 </Badge>
                 <p className="text-[10px] text-muted-foreground mt-2">{dataPostagem}</p>
              </div>

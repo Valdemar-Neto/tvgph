@@ -39,7 +39,14 @@ export default async function DashboardPage() {
     prisma.user.count({ where: { active: true } }),
     prisma.report.count(),
     prisma.area.findMany(),
-    prisma.user.findMany({ where: { active: true }, select: { id: true, name: true } }),
+    prisma.user.findMany({ 
+      where: { active: true }, 
+      select: { 
+        id: true, 
+        name: true,
+        userAreas: { include: { area: true } }
+      } 
+    }),
     prisma.meeting.findMany({
       orderBy: { date: 'desc' },
       take: 8,
@@ -174,7 +181,10 @@ export default async function DashboardPage() {
             <div className="flex flex-wrap gap-2">
               {pendingMembers.map((m: any) => (
                 <Badge key={m.id} variant="outline" className="border-destructive/40 text-destructive font-medium">
-                  {m.name}
+                  {m.name} 
+                  <span className="ml-1 opacity-60 text-[10px] font-normal">
+                    ({m.userAreas?.map((ua: any) => ua.area?.name).join(', ') || 'Sem Área'})
+                  </span>
                 </Badge>
               ))}
             </div>
