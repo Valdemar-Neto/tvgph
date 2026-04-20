@@ -45,6 +45,10 @@ model User {
   active    Boolean  @default(false)
   createdAt DateTime @default(now())
 
+  // Recuperação de Senha
+  resetToken        String?
+  resetTokenExpires DateTime?
+
   // Relações
   userAreas  UserArea[]
   reports    Report[]
