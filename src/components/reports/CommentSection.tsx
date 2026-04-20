@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { MessageSquare, Send, Trash2, User as UserIcon } from 'lucide-react';
+import { MessageSquare, Send, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
 import { postCommentAction, deleteCommentAction } from '@/app/actions/social';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
@@ -24,7 +23,7 @@ interface Comment {
 
 interface CommentSectionProps {
   reportId: string;
-  initialComments: any[];
+  initialComments: Comment[];
   currentUserId: string;
   currentUserRole: string;
 }
@@ -35,7 +34,7 @@ export function CommentSection({ reportId, initialComments, currentUserId, curre
 
   // Nota: Em um app real usaríamos revalidation do server components, 
   // mas aqui vamos tratar o estado local para feedback instantâneo.
-  const [comments, setComments] = useState<Comment[]>(initialComments);
+  const [comments /* , setComments */] = useState<Comment[]>(initialComments);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

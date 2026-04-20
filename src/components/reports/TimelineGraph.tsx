@@ -3,8 +3,6 @@
 import React, { useMemo } from 'react';
 import { getISOWeekString, cn } from '@/lib/utils';
 import { 
-  PlusCircle, 
-  CheckCircle2, 
   Flame, 
   Target, 
   BarChart3,
@@ -128,7 +126,7 @@ export function TimelineGraph({ reports }: TimelineGraphProps) {
         <div className="relative bg-slate-50/30 px-6 pb-6 pt-14 rounded-2xl border border-slate-100 overflow-x-auto">
           {/* Month Labels */}
           <div className="flex gap-2 mb-2 min-w-max">
-            {weeks.map((w, idx) => (
+            {weeks.map((w) => (
               <div key={`label-${w.weekStr}`} className="w-5 text-center relative">
                 {w.monthLabel && (
                   <span className="text-[9px] font-black text-slate-300 uppercase absolute bottom-0 left-1/2 -translate-x-1/2 mb-1">

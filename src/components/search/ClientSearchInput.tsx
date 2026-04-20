@@ -23,7 +23,7 @@ export function ClientSearchInput({ placeholder = "Search..." }: { placeholder?:
       }, 500);
 
       return () => clearTimeout(timer);
-   }, [query]); // Omito o router/search para evitar loops indesejados caso parametros extra mudem
+   }, [query, router, searchParams]);
 
    return (
       <div className="relative w-full md:w-80 shadow-sm transition-all focus-within:shadow-md rounded-md">

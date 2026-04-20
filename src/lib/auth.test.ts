@@ -16,7 +16,7 @@ describe('getAuthSession', () => {
   const SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
 
   it('deve retornar null se o cookie auth_token não existir', () => {
-    (cookies as any)().get.mockReturnValue(undefined);
+    (cookies as unknown as { (): { get: { mockReturnValue: (v: unknown) => void } } })().get.mockReturnValue(undefined);
     expect(getAuthSession()).toBeNull();
   });
 
@@ -24,14 +24,14 @@ describe('getAuthSession', () => {
     const payload = { userId: 'user-123', role: 'MANAGER' };
     const token = jwt.sign(payload, SECRET);
     
-    (cookies as any)().get.mockReturnValue({ value: token });
+    (cookies as unknown as { (): { get: { mockReturnValue: (v: unknown) => void } } })().get.mockReturnValue({ value: token });
     
     const session = getAuthSession();
     expect(session).toEqual(payload);
   });
 
   it('deve retornar null se o token for inválido', () => {
-    (cookies as any)().get.mockReturnValue({ value: 'token-invalido' });
+    (cookies as unknown as { (): { get: { mockReturnValue: (v: unknown) => void } } })().get.mockReturnValue({ value: 'token-invalido' });
     expect(getAuthSession()).toBeNull();
   });
 });
