@@ -41,8 +41,9 @@ O **TvGPH** é uma plataforma dedicada à gestão de produtividade e frequência
 
 ## 📚 Documentação Interna
 
-- [Guia para Membros](./docs/GUIA_MEMBROS.md) - Saiba como enviar seus reports.
-- [Guia para Gerentes](./docs/GUIA_GERENTES.md) - Gestão de usuários e aprovações.
+- [Guia para Membros](https://github.com/Valdemar-Neto/tvgph/blob/master/docs/RESEARCHER_PROTOCOL.md) - Saiba como enviar seus reports.
+- [Guia para Gerentes]([./docs/GUIA_GERENTES.md](https://github.com/Valdemar-Neto/tvgph/blob/master/docs/LABORATORY_MANAGER_PROTOCOL.md)) - Gestão de usuários e aprovações.
+- - [Guia para o Professor](https://github.com/Valdemar-Neto/tvgph/blob/master/docs/MAIN_MANAGER_PROTOCOL.md) - Gestão de usuários e aprovações.
 - [Análise de Segurança](./security_audit.md) - Auditoria de riscos e mitigação.
 
 ## 📄 Licença
