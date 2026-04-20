@@ -13,12 +13,20 @@ const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
 
 import { ClientSearchInput } from '@/components/search/ClientSearchInput';
 import { AreaFilterChips } from '@/components/search/AreaFilterChips';
+import { LoadMoreButton } from '@/components/search/LoadMoreButton';
+import { cn } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
 
-export default async function TvgphGlobalFeedPage({ searchParams }: { searchParams: { q?: string; area?: string } }) {
+export default async function TvgphGlobalFeedPage({ 
+  searchParams 
+}: { 
+  searchParams: { q?: string; area?: string; limit?: string } 
+}) {
   const query = searchParams?.q || '';
   const areaFilter = searchParams?.area || '';
+  const limit = Number(searchParams?.limit) || 12;
+
   const token = cookies().get('auth_token')?.value;
   if (!token) redirect('/login');
 
@@ -28,7 +36,7 @@ export default async function TvgphGlobalFeedPage({ searchParams }: { searchPara
     redirect('/login');
   }
 
-  // Busca com filtro de texto e de área
+  // Busca com filtro de texto e de área + limit (pegamos 1 a mais para saber se tem mais)
   const globalReports = await prisma.report.findMany({
     where: {
       ...(query ? {
@@ -45,8 +53,11 @@ export default async function TvgphGlobalFeedPage({ searchParams }: { searchPara
       attachments: true
     },
     orderBy: { createdAt: 'desc' },
-    take: 12
+    take: limit + 1
   });
+
+  const hasMore = globalReports.length > limit;
+  const items = globalReports.slice(0, limit);
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-8">
@@ -72,7 +83,7 @@ export default async function TvgphGlobalFeedPage({ searchParams }: { searchPara
 
       {/* Chips de Área */}
       <AreaFilterChips />
-      {globalReports.length === 0 ? (
+      {items.length === 0 ? (
         <Card className="flex flex-col items-center justify-center p-12 text-center border-dashed bg-muted/10 shadow-none">
           <CardTitle className="text-xl opacity-70">A Rede de Transmissão está silenciosa...</CardTitle>
           <CardDescription className="max-w-md mt-2">
@@ -80,47 +91,57 @@ export default async function TvgphGlobalFeedPage({ searchParams }: { searchPara
           </CardDescription>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {globalReports.map((report: any) => (
-            <Card key={report.id} className="relative group overflow-hidden border-border hover:border-primary/50 transition-colors duration-300">
-              <CardHeader className="pb-3 border-b bg-muted/10">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex items-center gap-2">
-                     <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
-                        {report.author.name.substring(0,2).toUpperCase()}
-                     </div>
-                     <div>
-                        <p className="text-sm font-semibold">{report.author.name}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider">{report.area.name} • {report.isoWeek}</p>
-                     </div>
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {items.map((report: any) => (
+              <Card key={report.id} className="relative group overflow-hidden border-border hover:border-primary/50 transition-colors duration-300">
+                <CardHeader className="pb-3 border-b bg-muted/10">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center gap-2">
+                       <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
+                          {report.author.name.substring(0,2).toUpperCase()}
+                       </div>
+                       <div>
+                          <p className="text-sm font-semibold">{report.author.name}</p>
+                          <p className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider">{report.area?.name || 'Geral'} • {report.isoWeek}</p>
+                       </div>
+                    </div>
+                    <Badge 
+                      variant={report.status === 'SUBMITTED' ? 'default' : 'secondary'} 
+                      className={cn(
+                        "text-[10px] uppercase",
+                        report.status === 'REVIEWED' && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200"
+                      )}
+                    >
+                      {report.status === 'REVIEWED' ? 'Revisado' : report.status}
+                    </Badge>
                   </div>
-                  <Badge variant={report.status === 'SUBMITTED' ? 'default' : 'secondary'} className="text-[10px] uppercase">
-                    {report.status}
-                  </Badge>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="space-y-4 pt-4">
-                <div className="bg-background min-h-[60px] text-sm text-foreground/80 line-clamp-4 overflow-hidden text-ellipsis prose prose-sm dark:prose-invert" 
-                     dangerouslySetInnerHTML={{ __html: report.content }} />
+                </CardHeader>
                 
-                <div className="flex items-center justify-between mt-4">
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                     {report.attachments.length > 0 ? (
-                       <span className="flex items-center font-medium bg-muted px-2 py-1 rounded-md"><Paperclip className="h-3.5 w-3.5 mr-1 text-primary"/> {report.attachments.length} Anexos</span>
-                     ) : (
-                       <span className="flex items-center opacity-60 bg-muted px-2 py-1 rounded-md"><FileText className="h-3.5 w-3.5 mr-1"/> Puramente Textual</span>
-                     )}
+                <CardContent className="space-y-4 pt-4">
+                  <div className="bg-background min-h-[60px] text-sm text-foreground/80 line-clamp-4 overflow-hidden text-ellipsis prose prose-sm dark:prose-invert" 
+                       dangerouslySetInnerHTML={{ __html: report.content }} />
+                  
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                       {report.attachments.length > 0 ? (
+                         <span className="flex items-center font-medium bg-muted px-2 py-1 rounded-md"><Paperclip className="h-3.5 w-3.5 mr-1 text-primary"/> {report.attachments.length} Anexos</span>
+                       ) : (
+                         <span className="flex items-center opacity-60 bg-muted px-2 py-1 rounded-md"><FileText className="h-3.5 w-3.5 mr-1"/> Puramente Textual</span>
+                       )}
+                    </div>
+                    <Link href={`/tvgph/${report.id}`}>
+                      <Button variant="outline" size="sm" className="font-semibold group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                         Visualizar <ExternalLink className="h-3 w-3 ml-2" />
+                      </Button>
+                    </Link>
                   </div>
-                  <Link href={`/tvgph/${report.id}`}>
-                    <Button variant="outline" size="sm" className="font-semibold group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                       Visualizar <ExternalLink className="h-3 w-3 ml-2" />
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {hasMore && <LoadMoreButton currentLimit={limit} />}
         </div>
       )}
     </div>

@@ -102,3 +102,22 @@ export async function approveUserAction(userId: string, areaIds: string[]) {
     return { error: e.message || 'Erro ao aprovar membro.' };
   }
 }
+
+// 5. Marcar um report como revisado (Líder/Gerente)
+export async function reviewReportAction(reportId: string) {
+  const managerId = getManagerId();
+  if (!managerId) return { error: 'Acesso Negado.' };
+
+  try {
+    await prisma.report.update({
+      where: { id: reportId },
+      data: { status: 'REVIEWED' }
+    });
+    revalidatePath('/tvgph');
+    revalidatePath('/dashboard');
+    revalidatePath(`/tvgph/${reportId}`);
+    return { success: true };
+  } catch (e: any) {
+    return { error: 'Falha ao atualizar status do report.' };
+  }
+}
