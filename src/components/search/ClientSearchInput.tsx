@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 
-export function ClientSearchInput({ placeholder = "Pesquisar..." }: { placeholder?: string }) {
+export function ClientSearchInput({ placeholder = "Search..." }: { placeholder?: string }) {
    const router = useRouter();
    const searchParams = useSearchParams();
    const initialQuery = searchParams.get('q') || '';
