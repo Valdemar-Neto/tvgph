@@ -1,0 +1,447 @@
+GphReport: Circuit Dark
+
+Product Overview
+
+The Pitch: A high-precision, technical reporting dashboard for university hardware research groups to submit, review, and track weekly progress. It replaces fragmented spreadsheets with a centralized, immutable record of engineering milestones, hardware specs, and meeting attendance.
+
+For: Hardware engineering students, project managers, and faculty advisors who need structured visibility into weekly R&D cycles.
+
+Device: desktop
+
+Design Direction: Circuit Dark — a brutalist, technical aesthetic mimicking modern IDEs and PCB design software. Deep charcoal backgrounds, 1px sharp borders, electric cyan accents, and monospaced data visualization.
+
+Inspired by: Linear, Altium Designer, VS Code
+
+
+
+Screens
+
+
+
+
+
+Auth (Login/Register): Terminal-style entry point for member access and registration.
+
+
+
+Member Feed: Real-time grid of submitted reports filtered by week and R&D area.
+
+
+
+Report Editor: Technical documentation interface supporting rich text, video, and schematic (PDF) uploads.
+
+
+
+Report Viewer: Distraction-free reading view with integrated media players and manager approval controls.
+
+
+
+My Timeline: Personal history visualizing weekly submission consistency via a commit-graph style calendar.
+
+
+
+Manager Dashboard: High-level telemetry of team output, area distribution, and pending approval queues.
+
+
+
+Attendance Matrix: Cross-tabular view of member presence across lab sessions with low-frequency highlighting.
+
+
+
+Access Control: Admin table for approving new members and assigning roles (Member, Manager, Advisor).
+
+
+
+Key Flows
+
+Weekly Report Submission: Hardware researcher submitting their weekly update.
+
+
+
+
+
+User is on Member Feed -> sees global grid of recent reports
+
+
+
+User clicks [New Report] -> opens Report Editor
+
+
+
+User drafts content, uploads demo MP4, selects 'Projetos' area, clicks [Deploy]
+
+
+
+Screen flashes cyan success toast -> redirects to Report Viewer with 'Pending Review' status
+
+
+
+Design System
+
+Color Palette
+
+
+
+
+
+Primary: #00E5FF - Electric Cyan (CTAs, active states, focus rings)
+
+
+
+Background: #0B0E14 - Deep Void (Page background)
+
+
+
+Surface: #151A22 - Component Surface (Cards, sidebars, modals)
+
+
+
+Text: #F1F5F9 - Bright Ash (Primary body, headings)
+
+
+
+Muted: #475569 - Dimmed Slate (Borders, secondary text, placeholders)
+
+
+
+Accent Success: #39FF14 - Neon Green (Approved badges, high attendance)
+
+
+
+Accent Danger: #FF2442 - Laser Red (Missed reports, destructive actions)
+
+Typography
+
+
+
+
+
+Headings: Geist Mono, 600, 20-32px
+
+
+
+Body: Geist Sans, 400, 14px
+
+
+
+Data/Tags: Geist Mono, 500, 12px
+
+
+
+Buttons: Geist Mono, 600, 13px, uppercase tracking
+
+Style notes: 0px border radius everywhere. 1px solid borders (#475569) on all cards and inputs. Background features a subtle 24px grid pattern overlay at 3% opacity. Shadows are omitted in favor of solid borders and slight background color shifts (surface to surface-light).
+
+Design Tokens
+
+:root {
+  --color-primary: #00E5FF;
+  --color-background: #0B0E14;
+  --color-surface: #151A22;
+  --color-surface-hover: #1E2530;
+  --color-text: #F1F5F9;
+  --color-muted: #475569;
+  --color-success: #39FF14;
+  --color-danger: #FF2442;
+  --font-mono: 'Geist Mono', monospace;
+  --font-sans: 'Geist', sans-serif;
+  --radius: 0px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+}
+
+
+
+
+
+Screen Specifications
+
+Auth (Login/Register)
+
+Purpose: Secure entry and onboarding for researchers.
+
+Layout: Centered terminal-window style modal on a dark grid background.
+
+Key Elements:
+
+
+
+
+
+Logo Area: Text GphReport v2.0 in Geist Mono, electric cyan.
+
+
+
+Input Fields: 40px height, 1px #475569 border, transparent background, placeholder in Geist Mono. Focus state changes border to #00E5FF and adds a 1px cyan glow.
+
+
+
+Area Selector (Register): Checkbox grid for Cursos, Projetos, Eventos, Marketing. Checked state fills box with cyan.
+
+
+
+Submit Button: Full width, 40px height, solid #00E5FF background, #0B0E14 text, uppercase.
+
+States:
+
+
+
+
+
+Loading: Submit button text changes to AUTHENTICATING... with blinking underscore.
+
+
+
+Error: 1px red border around inputs, laser red text below ERR_INVALID_CREDENTIALS.
+
+Member Feed
+
+Purpose: Central hub viewing all lab activity.
+
+Layout: Left sidebar (240px), top filter bar (64px), main responsive grid area.
+
+Key Elements:
+
+
+
+
+
+Sidebar Nav: List of links (Feed, My Reports, Attendance, Dashboard). Active link has a left 2px cyan border and #1E2530 background.
+
+
+
+Week Selector: Top right dropdown, monospaced text WEEK_42.
+
+
+
+Report Card: 320px width, 200px height. Contains:
+
+
+
+
+
+Header: Author name, Date (12-OCT-2023).
+
+
+
+Badge: Area tag (e.g., [PROJETOS]) in cyan text, 1px cyan border.
+
+
+
+Body: 3 lines of truncated report text.
+
+
+
+Status: Green dot (Reviewed) or Gray dot (Pending).
+
+States:
+
+
+
+
+
+Empty: Center text NO_REPORTS_FOUND_FOR_QUERY.
+
+
+
+Loading: Skeleton cards with pulsing #1E2530 fills.
+
+Report Editor
+
+Purpose: Creation of weekly hardware progress updates.
+
+Layout: Split pane: Left 70% for rich text and uploads, Right 30% for metadata and publishing controls.
+
+Key Elements:
+
+
+
+
+
+Editor Canvas: Minimalist markdown-style editor, no toolbar (slash commands).
+
+
+
+Media Dropzone: Dashed 1px border (#475569), text DRAG_VIDEO_OR_SCHEMATIC_PDF_HERE.
+
+
+
+Area Selector: Radio buttons in the right sidebar.
+
+
+
+Deploy Button: Bottom right sticky, cyan background.
+
+Interactions:
+
+
+
+
+
+Hover Dropzone: Border turns cyan, background shifts to #151A22.
+
+
+
+Click Deploy: Button text switches to UPLOADING [||||||....].
+
+Report Viewer
+
+Purpose: Reading and reviewing submitted reports.
+
+Layout: Centered 800px column, floating action bar for managers.
+
+Key Elements:
+
+
+
+
+
+Title Block: H1 heading, author chip, timestamp.
+
+
+
+Media Player: Custom dark-themed HTML5 video player, sharp corners.
+
+
+
+PDF Viewer: Inline canvas rendering of the first page with [VIEW_FULL_DOCUMENT] button.
+
+
+
+Manager Controls: Fixed bottom bar for users with 'Manager' role. Contains [MARK_REVIEWED] (Neon Green) and [REQUEST_REVISION] (Laser Red).
+
+My Timeline
+
+Purpose: Tracking personal consistency.
+
+Layout: Top summary stats, middle commit-graph, bottom list of personal reports.
+
+Key Elements:
+
+
+
+
+
+Commit Graph: 52-column grid of 12x12px squares.
+
+
+
+
+
+Green #39FF14: Submitted on time.
+
+
+
+Red #FF2442: Missed week.
+
+
+
+Gray #151A22: Future/Empty.
+
+
+
+Stat Cards: 3 metrics (Total Reports, Streak, On-time %).
+
+Manager Dashboard
+
+Purpose: Macro-level view of lab operations.
+
+Layout: Top 4 metric cards, middle charts, bottom approval queue table.
+
+Key Elements:
+
+
+
+
+
+Metric Cards: 240x120px. Large 32px monospaced number, 14px label.
+
+
+
+Distribution Chart: Horizontal bar chart showing reports per area. Bars are 8px tall, cyan.
+
+
+
+Approval Queue: Table with Author, Area, Wait Time, and [REVIEW] action button.
+
+Attendance Matrix
+
+Purpose: Tracking physical lab presence.
+
+Layout: Full-width dense data table.
+
+Key Elements:
+
+
+
+
+
+Matrix Table: Columns are meetings (e.g., M-10/12), Rows are members.
+
+
+
+Cells: Clickable. Toggles between [X] (Red, absent) and [✓] (Green, present).
+
+
+
+Frequency Column: Right-most column showing percentage. Text turns red if < 75%.
+
+Access Control
+
+Purpose: Administering users and roles.
+
+Layout: Dual tables: "Pending Approvals" (top) and "Active Personnel" (bottom).
+
+Key Elements:
+
+
+
+
+
+Approval Card: Row showing Name, Email, Area. Actions: [APPROVE] (Green), [REJECT] (Red).
+
+
+
+Role Select: Native <select> styled with 1px border, options: MEMBER, MANAGER, ADVISOR.
+
+
+
+Status Toggle: Switch component (sharp square knob) to disable accounts.
+
+
+
+
+
+Build Guide
+
+Stack: HTML + Tailwind CSS v3 + React/Next.js
+
+Build Order:
+
+
+
+
+
+Design System & Layout: Setup tailwind.config.js with exact colors/fonts, build the 1px border wrappers and sidebar layout.
+
+
+
+Member Feed: Establishes the core UI patterns (cards, badges, typography hierarchy).
+
+
+
+Auth (Login/Register): Form inputs, validation states, and the terminal aesthetic.
+
+
+
+Report Editor & Viewer: Complex components (rich text, dropzones, media players).
+
+
+
+My Timeline: Custom CSS grid for the commit-graph calendar.
+
+
+
+Manager Dash & Attendance: Data-heavy tables and charts.
+
