@@ -20,7 +20,7 @@ export default function RegistrationPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [areas, setAreas] = useState<Area[]>([]);
+  const [, setAreas] = useState<Area[]>([]);
   const [selectedAreaIds, setSelectedAreaIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -130,19 +130,11 @@ export default function RegistrationPage() {
 
       toast.success('Registration pending approval from laboratory management.');
       setTimeout(() => router.push('/login'), 2000);
-    } catch (err) {
+    } catch {
       toast.error('An unexpected error occurred during registration.');
       setLoading(false);
     }
   }
-
-  const toggleArea = (id: string) => {
-    if (selectedAreaIds.includes(id)) {
-      setSelectedAreaIds(selectedAreaIds.filter(item => item !== id));
-    } else {
-      setSelectedAreaIds([...selectedAreaIds, id]);
-    }
-  };
 
   return (
     <div className="min-h-screen w-full flex flex-col lg:flex-row bg-[#f8fafc] overflow-hidden relative">

@@ -44,15 +44,15 @@ export function PresenceChart({ data }: { data: PresenceDataPoint[] }) {
             axisLine={false}
           />
           <Tooltip
-            formatter={((value: unknown) => [`${Number(value ?? 0).toFixed(0)}%`, 'PRESENCE_TX']) as any}
+            formatter={(value) => [`${Number(value ?? 0).toFixed(0)}%`, 'PRESENCE_TX']}
             contentStyle={{ border: '1px solid var(--primary)', borderRadius: '0px', background: 'var(--card)', color: 'var(--foreground)', fontSize: '10px' }}
             itemStyle={{ color: 'var(--primary)', fontWeight: 'bold' }}
           />
-          <ReferenceLine 
-            y={75} 
-            stroke="var(--danger)" 
-            strokeDasharray="3 3" 
-            label={{ value: 'CRITICAL_75%', position: 'right', fontSize: 8, fill: 'var(--danger)', fontWeight: 'bold' }} 
+          <ReferenceLine
+            y={75}
+            stroke="var(--danger)"
+            strokeDasharray="3 3"
+            label={{ value: 'CRITICAL_75%', position: 'right', fontSize: 8, fill: 'var(--danger)', fontWeight: 'bold' }}
           />
           <Line
             type="stepAfter"

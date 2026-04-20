@@ -79,7 +79,7 @@ export default function ResetPasswordPage() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">New Password</CardTitle>
-          <CardDescription>Create a strong password so you don't forget it again!</CardDescription>
+          <CardDescription>Create a strong password so you don&apos;t forget it again!</CardDescription>
         </CardHeader>
         <CardContent>
           <Suspense fallback={<div>Loading secure link...</div>}>

@@ -37,7 +37,7 @@ export default function LoginPage() {
 
       toast.success('Login successful!');
       router.push('/tvgph');
-    } catch (err) {
+    } catch {
       toast.error('An unexpected error occurred.');
       setLoading(false);
     }
@@ -139,7 +139,7 @@ export default function LoginPage() {
             </form>
 
             <p className="mt-10 text-center text-xs font-semibold text-slate-500">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/register" className="text-blue-400 font-bold hover:underline underline-offset-4">
                 Create Account
               </Link>

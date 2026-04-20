@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import jwt from 'jsonwebtoken';
 import Image from 'next/image';
 import prisma from '@/lib/prisma';
-import { getISOWeekString, cn } from '@/lib/utils';
+import { getISOWeekString } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { UserX, ShieldCheck, Clock, CheckCircle2 } from 'lucide-react';
 

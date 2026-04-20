@@ -34,7 +34,7 @@ export default function ForgotPasswordPage() {
 
       setSuccess(true);
       toast.success('Link sent to your email!');
-    } catch (err) {
+    } catch {
       toast.error('Connection error while sending email.');
     } finally {
       setLoading(false);
