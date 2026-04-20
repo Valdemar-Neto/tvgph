@@ -1,39 +1,38 @@
-# Main Manager Protocol (Level 3 - Override)
+# Protocolo do Gerente Principal (Nível 3 - Sobrescrita)
 
-**Role Identification**: Professor / Diretor Geral (ROMANO)
-**Objective**: Absolute authority, top-level system governance, and entity erasure.
+**Identificação da Função**: Professor / Diretor Geral (ROMANO)  
+**Objetivo**: Autoridade absoluta, governança do sistema em nível superior e exclusão de entidades.
 
 ---
 
-## 1. Absolute Authority & Role Escalation
-The Main Manager possesses the final word on the GPH digital hierarchy.
+## 1. Autoridade Absoluta e Escalonamento de Funções
+O Gerente Principal possui a palavra final sobre a hierarquia digital do GPH.
 
-- **Commander Promotion**: The Main Manager can promote any researcher directly to **Manager** or elevate another entity to **Main Manager** status.
-- **Access Override**: Can deactivate or reactivate any personnel entity regardless of previous manager decisions.
-- **Direct Intervention**: Can edit or delete any contribution (Reports, Comments, Likes) across all research areas without restriction.
+- **Promoção de Comandante**: O Gerente Principal pode promover qualquer pesquisador diretamente a **Gerente** ou elevar outra entidade ao status de **Gerente Principal**.
+- **Sobrescrita de Acesso**: Pode desativar ou reativar qualquer entidade de pessoal, independentemente de decisões anteriores de outros gerentes.
+- **Intervenção Direta**: Pode editar ou excluir qualquer contribuição (Relatórios, Comentários, Curtidas) em todas as áreas de pesquisa sem restrições.
 
-## 2. Entity Erasure & Sanitization
-The Main Manager is the only role authorized to perform **Permanent Deletions**.
+## 2. Exclusão e Sanetização de Entidades
+O Gerente Principal é a única função autorizada a realizar **Exclusões Permanentes**.
 
-- **User Removal**: Permanently removing a researcher from the database (use cases: departure from group, security breach, or duplicate accounts).
-- **Report Deletion**: Scrubbing erroneous or non-compliant data packets from the archives.
+- **Remoção de Usuário**: Remover permanentemente um pesquisador do banco de dados (casos de uso: saída do grupo, violação de segurança ou contas duplicadas).
+- **Exclusão de Relatórios**: Limpar pacotes de dados errôneos ou não conformes dos arquivos.
 
 > [!CAUTION]
-> **Permanent Deletions** are non-recoverable and bypass regular archiving protocols. Use with scientific discretion.
+> **Exclusões Permanentes** não são recuperáveis e ignoram os protocolos regulares de arquivamento. Use com discrição científica.
 
-## 3. Infrastructure & Strategic Oversight
-The Main Manager is responsible for the health of the laboratory's digital infrastructure.
+## 3. Infraestrutura e Supervisão Estratégica
+O Gerente Principal é responsável pela saúde da infraestrutura digital do laboratório.
 
-- **Telemetery Audit (Sentry)**: Monitoring real-time system errors and performance bottlenecks at [sentry.io] or equivalent interface.
-- **Architectural Interface (API/Swagger)**: Overseeing the integration capabilities of the Command Center via the `/docs` endpoint for external data consumption.
-- **Global Branding**: Maintaining the visual and linguistical integrity of the "Laboratory Command Center" (Ensuring adherence to the English-only standardization).
+- **Auditoria de Telemetria (Sentry)**: Monitoramento de erros do sistema em tempo real e gargalos de desempenho via [sentry.io] ou interface equivalente.
+- **Interface Arquitetural (API/Swagger)**: Supervisão das capacidades de integração do Centro de Comando através do endpoint `/docs` para consumo de dados externos.
+- **Branding Global**: Manter a integridade visual e linguística do "Laboratory Command Center" (Garantindo a adesão à padronização apenas em inglês).
 
-## 4. Emergency Procedures
-In the event of a critical system failure or data corruption:
-1. Access the database management interface directly (Prisma Studio / Neon Console).
-2. Manually restore critical state variables.
-3. Notify all Managers of the lockdown status via top-level communication.
+## 4. Procedimentos de Emergência
+Em caso de falha crítica do sistema ou corrupção de dados:
+1. Acesse a interface de gerenciamento do banco de dados diretamente (Prisma Studio / Neon Console).
+2. Restaure manualmente as variáveis de estado críticas.
+3. Notifique todos os Gerentes sobre o status de bloqueio via comunicação de nível superior.
 
 ---
-*Status: GLOBAL COMMAND ACTIVE*
-*Authorized by: ROMANO - Main Manager*
+*Status: COMANDO GLOBAL ATIVO* *Autorizado por: ROMANO - Gerente Principal*
