@@ -26,37 +26,44 @@ export function PresenceChart({ data }: { data: PresenceDataPoint[] }) {
   }
 
   return (
-    <ResponsiveContainer width="100%" height={260}>
-      <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-        <XAxis
-          dataKey="label"
-          tick={{ fontSize: 11 }}
-          className="fill-muted-foreground"
-          tickLine={false}
-        />
-        <YAxis
-          domain={[0, 100]}
-          tickFormatter={(v) => `${v}%`}
-          tick={{ fontSize: 11 }}
-          className="fill-muted-foreground"
-          tickLine={false}
-          axisLine={false}
-        />
-        <Tooltip
-          formatter={((value: unknown) => [`${Number(value ?? 0).toFixed(0)}%`, 'Presença']) as any}
-          contentStyle={{ borderRadius: '8px', fontSize: '13px' }}
-        />
-        <ReferenceLine y={75} stroke="hsl(var(--primary))" strokeDasharray="4 2" opacity={0.4} label={{ value: '75%', position: 'right', fontSize: 10 }} />
-        <Line
-          type="monotone"
-          dataKey="taxa"
-          stroke="hsl(var(--primary))"
-          strokeWidth={2.5}
-          dot={{ r: 4, fill: 'hsl(var(--primary))' }}
-          activeDot={{ r: 6 }}
-        />
-      </LineChart>
-    </ResponsiveContainer>
+    <div className="font-mono">
+      <ResponsiveContainer width="100%" height={260}>
+        <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="2 2" className="stroke-primary/10" vertical={false} />
+          <XAxis
+            dataKey="label"
+            tick={{ fontSize: 9, fill: 'currentColor', opacity: 0.5 }}
+            tickLine={false}
+            axisLine={false}
+          />
+          <YAxis
+            domain={[0, 100]}
+            tickFormatter={(v) => `${v}%`}
+            tick={{ fontSize: 9, fill: 'currentColor', opacity: 0.5 }}
+            tickLine={false}
+            axisLine={false}
+          />
+          <Tooltip
+            formatter={((value: unknown) => [`${Number(value ?? 0).toFixed(0)}%`, 'PRESENCE_TX']) as any}
+            contentStyle={{ border: '1px solid var(--primary)', borderRadius: '0px', background: 'var(--card)', color: 'var(--foreground)', fontSize: '10px' }}
+            itemStyle={{ color: 'var(--primary)', fontWeight: 'bold' }}
+          />
+          <ReferenceLine 
+            y={75} 
+            stroke="var(--danger)" 
+            strokeDasharray="3 3" 
+            label={{ value: 'CRITICAL_75%', position: 'right', fontSize: 8, fill: 'var(--danger)', fontWeight: 'bold' }} 
+          />
+          <Line
+            type="stepAfter"
+            dataKey="taxa"
+            stroke="var(--primary)"
+            strokeWidth={1.5}
+            dot={{ r: 2, fill: 'var(--primary)', strokeWidth: 0 }}
+            activeDot={{ r: 4, fill: 'var(--primary)' }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

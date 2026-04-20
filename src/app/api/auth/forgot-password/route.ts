@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     const { email } = await request.json();
 
     if (!email) {
-      return NextResponse.json({ error: 'Email é obrigatório' }, { status: 400 });
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
     const user = await prisma.user.findUnique({
@@ -17,13 +17,13 @@ export async function POST(request: Request) {
     });
 
     if (!user) {
-      // Retornar 200 mesmo se não achar, por segurança (evita fishing de base de dados)
-      return NextResponse.json({ message: 'Se o e-mail existir, um link foi enviado.' }, { status: 200 });
+      // Returning 200 even if not found for security (avoids database fishing)
+      return NextResponse.json({ message: 'If the email exists, a link has been sent.' }, { status: 200 });
     }
 
-    // Gerar token seguro genérico do Node (tamanho 32 bytes em HEX)
+    // Generate specific generic Node secure token (32 bytes in HEX)
     const resetToken = crypto.randomBytes(32).toString('hex');
-    const tokenExpires = new Date(Date.now() + 3600000); // 1 hora de validade
+    const tokenExpires = new Date(Date.now() + 3600000); // 1 hour validity
 
     await prisma.user.update({
       where: { email },
@@ -33,18 +33,18 @@ export async function POST(request: Request) {
       }
     });
 
-    // MOCK: Num ambiente real trocaríamos pelo Client do Resend ou AWS SES
-    const resetUrl = `http://localhost:3000/redefinir-senha?token=${resetToken}`;
+    // MOCK: In a real environment we would use Resend or AWS SES Client
+    const resetUrl = `http://localhost:3000/reset-password?token=${resetToken}`;
     console.log(`\n==============================================`);
-    console.log(`🚨 MOCK DE E-MAIL (TVGPH RECUPERAÇÃO) 🚨`);
-    console.log(`Para: ${user.name} <${user.email}>`);
-    console.log(`Mensagem: Olá, clique no link abaixo para recuperar sua senha:`);
+    console.log(`🚨 E-MAIL MOCK (TVGPH RECOVERY) 🚨`);
+    console.log(`To: ${user.name} <${user.email}>`);
+    console.log(`Message: Hello, click the link below to recover your password:`);
     console.log(`${resetUrl}`);
     console.log(`==============================================\n`);
 
-    return NextResponse.json({ message: 'Se o e-mail existir, um link foi enviado.' }, { status: 200 });
+    return NextResponse.json({ message: 'If the email exists, a link has been sent.' }, { status: 200 });
 
   } catch (error) {
-    return NextResponse.json({ error: 'Erro ao processar solicitação.' }, { status: 500 });
+    return NextResponse.json({ error: 'Error processing request.' }, { status: 500 });
   }
 }

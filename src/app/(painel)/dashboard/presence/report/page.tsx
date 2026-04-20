@@ -9,13 +9,13 @@ import { Button } from '@/components/ui/button';
 const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
 export const dynamic = 'force-dynamic';
 
-export default async function RelatorioPresencaPage() {
+export default async function AttendanceReportPage() {
   const token = cookies().get('auth_token')?.value;
   if (!token) redirect('/login');
 
   try {
     const payload = jwt.verify(token, JWT_SECRET) as { role: string };
-    if (payload.role !== 'MANAGER') redirect('/tvgph');
+    if (!['MANAGER', 'PROFESSOR'].includes(payload.role)) redirect('/tvgph');
   } catch {
     redirect('/login');
   }
@@ -32,7 +32,7 @@ export default async function RelatorioPresencaPage() {
     })
   ]);
 
-  // Monta mapa: userId → Set<meetingId> onde está presente
+  // Build map: userId → Set<meetingId> where present
   const presenceMap = new Map<string, Set<string>>();
   for (const user of users) presenceMap.set(user.id, new Set());
   for (const meeting of meetings) {
@@ -43,9 +43,9 @@ export default async function RelatorioPresencaPage() {
 
   return (
     <div className="max-w-full mx-auto p-4 md:p-8 space-y-6 overflow-x-auto">
-      <Link href="/dashboard/presenca">
+      <Link href="/dashboard/presence">
         <Button variant="ghost" size="sm" className="text-muted-foreground -ml-2">
-          <ArrowLeft className="h-4 w-4 mr-2" /> Voltar às Presenças
+          <ArrowLeft className="h-4 w-4 mr-2" /> Back to Attendance
         </Button>
       </Link>
 
@@ -53,20 +53,20 @@ export default async function RelatorioPresencaPage() {
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight flex items-center">
             <BarChart3 className="mr-3 h-7 w-7 text-primary" />
-            Relatório Completo de Presenças
+            Full Attendance Report
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Cruzamento de todos os membros ativos com todas as reuniões registradas.
+            Cross-reference of all active members with all registered meetings.
           </p>
         </div>
         <Link href="/api/attendance/export">
-          <Button variant="outline" size="sm">📥 Exportar CSV</Button>
+          <Button variant="outline" size="sm">📥 Export CSV</Button>
         </Link>
       </div>
 
       {meetings.length === 0 || users.length === 0 ? (
         <div className="border border-dashed rounded-xl p-12 text-center text-muted-foreground">
-          Nenhuma reunião ou membro ativo encontrado.
+          No meetings or active members found.
         </div>
       ) : (
         <div className="rounded-xl border overflow-hidden shadow-sm">
@@ -74,15 +74,15 @@ export default async function RelatorioPresencaPage() {
             <thead>
               <tr className="bg-muted/40 border-b">
                 <th className="text-left px-4 py-3 font-semibold text-muted-foreground sticky left-0 bg-muted/40 min-w-[180px]">
-                  Membro
+                  Member
                 </th>
                 {meetings.map((m: any) => (
                   <th key={m.id} className="px-3 py-3 font-semibold text-muted-foreground text-center min-w-[90px] leading-tight">
-                    <div className="text-xs">{new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', timeZone: 'UTC' }).format(new Date(m.date))}</div>
+                    <div className="text-xs">{new Intl.DateTimeFormat('en-US', { day: '2-digit', month: 'short', timeZone: 'UTC' }).format(new Date(m.date))}</div>
                     <div className="text-[10px] font-normal opacity-70 mt-0.5 truncate max-w-[80px]">{m.title}</div>
                   </th>
                 ))}
-                <th className="px-4 py-3 font-semibold text-muted-foreground text-center">% Presença</th>
+                <th className="px-4 py-3 font-semibold text-muted-foreground text-center">% Presence</th>
               </tr>
             </thead>
             <tbody>

@@ -6,10 +6,10 @@ export function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  const publicRoutes = ['/login', '/cadastro'];
+  const publicRoutes = ['/login', '/register', '/docs', '/forgot-password', '/reset-password'];
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
 
-  // Exemplo de liberação caso o usuário acessar a Home '/' deslogado, vai direto pro login
+  // Redirect to login if accessing Home '/' while logged out
   if (pathname === '/') {
     if (!token) {
       return NextResponse.redirect(new URL('/login', request.url));
@@ -17,24 +17,49 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/tvgph', request.url));
   }
 
-  // Comportamento rotas públicas (usuário logado tentou acessar o login)
-  if (isPublicRoute) {
+  // Auth routes: redirect to /tvgph if already logged in
+  const authRoutes = ['/login', '/register'];
+  const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
+
+  if (isAuthRoute) {
     if (token) {
-       return NextResponse.redirect(new URL('/tvgph', request.url));
+      return NextResponse.redirect(new URL('/tvgph', request.url));
     }
     return NextResponse.next();
   }
 
-  // Comportamento rotas privadas
+  // Other public routes: accessible to everyone
+  if (isPublicRoute) {
+    return NextResponse.next();
+  }
+
+  const publicApiRoutes = [
+    '/api/auth/login',
+    '/api/auth/register',
+    '/api/auth/forgot-password',
+    '/api/auth/reset-password',
+    '/api/openapi',
+    '/api/reports/presign',
+  ];
+  const isPublicApiRoute = publicApiRoutes.some(route => pathname.startsWith(route));
+
+  // Public APIs: allowed without token
+  if (isPublicApiRoute) {
+    return NextResponse.next();
+  }
+
+  // Global API Protection (private API routes)
+  if (pathname.startsWith('/api')) {
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    return NextResponse.next();
+  }
+
+  // Private page behavior
   if (!token) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
-
-  // Proteção do Dashboard (No MVP, idealmente decodificamos o token e vemos a role.
-  // Como o NextJS edge não lê jsonwebtoken lib sem polyfills pro Node.
-  // Podemos fazer a verificação usando a base JWT de atob ou edge libs).
-  // Se for acessar o /dashboard e não for admin, é negado lá ou no fetch.
-  // Pro MVP, a auth de token existe e é válido.
 
   return NextResponse.next();
 }
@@ -43,11 +68,12 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - gph-icon.png (logo)
+     * - group-image.png (branding)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico|gph-icon.png|group-image.png).*)',
   ],
 };

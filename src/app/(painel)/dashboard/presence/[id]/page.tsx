@@ -10,13 +10,13 @@ import { AttendanceTable } from './components/AttendanceTable';
 const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
 export const dynamic = 'force-dynamic';
 
-export default async function DetalhePresencaPage({ params }: { params: { id: string } }) {
+export default async function AttendanceDetailPage({ params }: { params: { id: string } }) {
   const token = cookies().get('auth_token')?.value;
   if (!token) redirect('/login');
 
   try {
     const payload = jwt.verify(token, JWT_SECRET) as { role: string };
-    if (payload.role !== 'MANAGER') redirect('/tvgph');
+    if (!['MANAGER', 'PROFESSOR'].includes(payload.role)) redirect('/tvgph');
   } catch {
     redirect('/login');
   }
@@ -33,13 +33,13 @@ export default async function DetalhePresencaPage({ params }: { params: { id: st
 
   if (!meeting) return notFound();
   
-  const dataFormatada = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(meeting.date));
+  const dataFormatada = new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(meeting.date));
 
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-6">
-       <Link href="/dashboard/presenca">
+       <Link href="/dashboard/presence">
          <Button variant="ghost" size="sm" className="mb-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 -ml-2">
-           <ArrowLeft className="h-4 w-4 mr-2" /> Voltar à Caderneta
+           <ArrowLeft className="h-4 w-4 mr-2" /> Back to Attendance Sheet
          </Button>
        </Link>
        
@@ -49,7 +49,7 @@ export default async function DetalhePresencaPage({ params }: { params: { id: st
              {meeting.title}
           </h1>
           <p className="text-muted-foreground mt-4 font-mono uppercase tracking-wider text-sm">
-             Data do Encontro: {dataFormatada}
+             Meeting Date: {dataFormatada}
           </p>
        </div>
 

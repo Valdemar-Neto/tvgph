@@ -6,8 +6,8 @@ import { z } from 'zod';
 import { cookies } from 'next/headers';
 
 const loginSchema = z.object({
-  email: z.string().email('Email inválido'),
-  password: z.string().min(1, 'A senha é obrigatória'),
+  email: z.string().email('Invalid email'),
+  password: z.string().min(1, 'Password is required'),
 });
 
 const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     const result = loginSchema.safeParse(body);
     
     if (!result.success) {
-      return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
     }
 
     const { email, password } = result.data;
@@ -28,21 +28,21 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'Credenciais inválidas' }, { status: 401 });
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return NextResponse.json({ error: 'Credenciais inválidas' }, { status: 401 });
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
     if (!user.active) {
-      return NextResponse.json({ error: 'Sua conta ainda não foi aprovada pelo gerente' }, { status: 403 });
+      return NextResponse.json({ error: 'Your account has not been approved by the manager yet' }, { status: 403 });
     }
 
     const token = jwt.sign(
-      { userId: user.id, role: user.role },
+      { userId: user.id, role: user.role, name: user.name, avatarUrl: user.avatarUrl },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -58,12 +58,12 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ 
-      message: 'Login realizado com sucesso',
-      user: { id: user.id, name: user.name, role: user.role }
+      message: 'Login successful',
+      user: { id: user.id, name: user.name, role: user.role, avatarUrl: user.avatarUrl }
     }, { status: 200 });
 
   } catch (error) {
     console.error('Login Error:', error);
-    return NextResponse.json({ error: 'Erro interno ao processar o login' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal error processing login' }, { status: 500 });
   }
 }

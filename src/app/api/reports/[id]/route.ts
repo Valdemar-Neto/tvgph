@@ -2,83 +2,93 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
-
-function getAuth() {
-  const token = cookies().get('auth_token')?.value;
-  if (!token) return null;
-  try {
-    return jwt.verify(token, JWT_SECRET) as { userId: string; role: string };
-  } catch {
-    return null;
-  }
-}
+import { getAuthSession } from '@/lib/auth';
+import { getISOWeekString } from '@/lib/utils';
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
-  const auth = getAuth();
-  if (!auth) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  const auth = getAuthSession();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const report = await prisma.report.findUnique({
     where: { id: params.id },
     include: { area: true, attachments: true }
   });
-  if (!report) return NextResponse.json({ error: 'Report não encontrado' }, { status: 404 });
+  if (!report) return NextResponse.json({ error: 'Report not found' }, { status: 404 });
 
-  // Apenas o autor ou gerente pode ver
-  if (report.authorId !== auth.userId && auth.role !== 'MANAGER') {
-    return NextResponse.json({ error: 'Sem permissão' }, { status: 403 });
+  // Only author or manager can view
+  if (report.authorId !== auth.userId && !['MANAGER', 'PROFESSOR'].includes(auth.role)) {
+    return NextResponse.json({ error: 'Access denied' }, { status: 403 });
   }
 
   return NextResponse.json({ report });
 }
 
-
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const auth = getAuth();
-  if (!auth) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  const auth = getAuthSession();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const report = await prisma.report.findUnique({ where: { id: params.id } });
-  if (!report) return NextResponse.json({ error: 'Report não encontrado' }, { status: 404 });
-
-  // Apenas o autor pode editar; gerente pode marcar como REVIEWED
-  if (report.authorId !== auth.userId && auth.role !== 'MANAGER') {
-    return NextResponse.json({ error: 'Sem permissão' }, { status: 403 });
-  }
+  if (!report) return NextResponse.json({ error: 'Report not found' }, { status: 404 });
 
   const body = await req.json();
 
-  // Gerente marcando como REVIEWED
-  if (auth.role === 'MANAGER' && body.status) {
+  // 1. Manager/Professor has full permission (including changing status)
+  if (['MANAGER', 'PROFESSOR'].includes(auth.role)) {
     const updated = await prisma.report.update({
       where: { id: params.id },
-      data: { status: body.status }
+      data: { 
+        ...(body.content && { content: body.content }),
+        ...(body.status && { status: body.status })
+      }
     });
     return NextResponse.json({ report: updated });
   }
 
-  // Autor editando conteúdo
-  const { content } = body;
-  if (!content) return NextResponse.json({ error: 'Conteúdo obrigatório' }, { status: 400 });
+  // 2. Rules for Members
+  if (auth.role === 'MEMBER') {
+    // Can only edit their own report
+    if (report.authorId !== auth.userId) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
 
-  const updated = await prisma.report.update({
-    where: { id: params.id },
-    data: { content }
-  });
-  return NextResponse.json({ report: updated });
+    const currentWeek = getISOWeekString(new Date());
+    const isCurrentWeek = report.isoWeek === currentWeek;
+
+    // Editing Lock: Only edit if it's the current week AND status is SUBMITTED
+    // (If the manager reopened a last week's report, status goes back to SUBMITTED.
+    // To simplify and allow functional reopening, we allow if SUBMITTED)
+    if (report.status === 'REVIEWED') {
+      return NextResponse.json({ error: 'This report has already been reviewed and is frozen.' }, { status: 403 });
+    }
+
+    if (!isCurrentWeek && report.status !== 'SUBMITTED') {
+       return NextResponse.json({ error: 'The editing deadline for this week has expired.' }, { status: 403 });
+    }
+
+    const { content } = body;
+    if (!content) return NextResponse.json({ error: 'Content required' }, { status: 400 });
+
+    const updated = await prisma.report.update({
+      where: { id: params.id },
+      data: { content }
+    });
+    return NextResponse.json({ report: updated });
+  }
+
+  return NextResponse.json({ error: 'Permission error' }, { status: 403 });
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-  const auth = getAuth();
-  if (!auth) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  const auth = getAuthSession();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const report = await prisma.report.findUnique({ where: { id: params.id } });
-  if (!report) return NextResponse.json({ error: 'Report não encontrado' }, { status: 404 });
+  if (!report) return NextResponse.json({ error: 'Report not found' }, { status: 404 });
 
-  if (report.authorId !== auth.userId && auth.role !== 'MANAGER') {
-    return NextResponse.json({ error: 'Sem permissão' }, { status: 403 });
+  if (report.authorId !== auth.userId && !['MANAGER', 'PROFESSOR'].includes(auth.role)) {
+    return NextResponse.json({ error: 'Access denied' }, { status: 403 });
   }
 
   await prisma.report.delete({ where: { id: params.id } });
-  return NextResponse.json({ message: 'Report removido com sucesso' });
+  return NextResponse.json({ message: 'Report removed successfully' });
 }
