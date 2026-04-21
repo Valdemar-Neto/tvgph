@@ -27,10 +27,10 @@ export async function POST(req: Request) {
     const fileExtension = filename.split('.').pop();
     const uniqueId = crypto.randomUUID();
     
-    // If avatar and no session (registration), use public folder
+    // If avatar and no session (registration), use unique temp folder
     // If there is a session, use the user ID
     const pathPrefix = isAvatar 
-      ? (decoded ? `avatars/${decoded.userId}` : `avatars/public`)
+      ? (decoded ? `avatars/${decoded.userId}` : `avatars/${uniqueId}`)
       : `reports/${decoded?.userId}`;
 
     const objectKey = `${pathPrefix}/${uniqueId}.${fileExtension}`;
