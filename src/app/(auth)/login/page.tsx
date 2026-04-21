@@ -104,8 +104,8 @@ export default function LoginPage() {
 
         {/* Right Section: High-End Glassmorphism Form Card */}
         <motion.div
-          className="w-full lg:w-[480px]"
-          initial={{ opacity: 0, x: 20 }}
+          className="w-full lg:w-[480px] relative z-20"
+          initial={{ opacity: 1, x: 0 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
           onMouseEnter={() => setIsFormHovered(true)}

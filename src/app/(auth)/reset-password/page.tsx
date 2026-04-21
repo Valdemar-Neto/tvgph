@@ -110,8 +110,8 @@ export default function ResetPasswordPage() {
       <CircuitBackground dark={false} />
 
       <motion.div
-        className="w-full max-w-md relative z-10"
-        initial={{ opacity: 0, y: 20 }}
+        className="w-full max-w-md relative z-20"
+        initial={{ opacity: 1, y: 0 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         onMouseEnter={() => setIsFormHovered(true)}
