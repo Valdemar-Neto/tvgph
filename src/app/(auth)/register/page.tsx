@@ -9,6 +9,9 @@ import { toast } from 'sonner';
 import { User as UserIcon, Mail, Lock, CheckCircle2, ChevronRight, Camera, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
+import { CircuitBackground } from '@/components/auth/CircuitBackground';
+import { motion } from 'framer-motion';
 
 interface Area {
   id: string;
@@ -21,11 +24,13 @@ export default function RegistrationPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [, setAreas] = useState<Area[]>([]);
-  const [selectedAreaIds,] = useState<Area[]>([]);
+  const [selectedAreaIds, setSelectedAreaIds] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [isFormHovered, setIsFormHovered] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -137,50 +142,109 @@ export default function RegistrationPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-[#f8fafc] overflow-hidden relative">
+    <div className="min-h-screen w-full flex items-center justify-center bg-black overflow-hidden relative font-mono selection:bg-blue-500/30">
 
-      {/* Abstract Background Elements (Subtle) */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-100/30 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-slate-200/40 rounded-full blur-[100px] pointer-events-none" />
+      {/* TECH GENERATIVE BACKGROUND */}
+      <CircuitBackground />
 
       {/* Main Container */}
       <div className="container relative z-10 mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 px-6 py-12 lg:py-0 min-h-screen">
 
-        {/* Left Section: Branding & Slogan (Identical to Login) */}
-        <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left space-y-8 animate-in fade-in slide-in-from-left duration-1000">
-          <div className="flex flex-col lg:flex-row items-center lg:items-end gap-6 mb-4">
-            <div className="h-40 w-40 md:h-56 md:w-56 lg:h-72 lg:w-72 bg-white rounded-[48px] shadow-2xl shadow-blue-500/10 flex items-center justify-center p-8 border border-slate-100 animate-in zoom-in duration-1000">
-              <Image src="/gph-icon.png" alt="GPH Logo" width={300} height={300} className="h-full w-full object-contain" priority unoptimized />
+        {/* Left Section: Branding & Slogan */}
+        <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left space-y-10">
+          <motion.div
+            className="relative"
+            animate={{
+              scale: (isFormHovered || focusedField) ? 1.2 : 1,
+              filter: (isFormHovered || focusedField)
+                ? "drop-shadow(0 0 70px rgba(59,130,246,1))"
+                : "drop-shadow(0 0 50px rgba(59,130,246,1))"
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          >
+            <div className="h-40 w-40 md:h-56 md:w-56 lg:h-64 lg:w-64 bg-slate-900/40 backdrop-blur-xl rounded-[48px] flex items-center justify-center p-8 border border-white/5 shadow-2xl relative overflow-hidden group">
+              <Image src="/gph-icon.png" alt="GPH Logo" width={300} height={300} className="h-full w-full object-contain relative z-10" priority unoptimized />
             </div>
-          </div>
-          <div className="h-1.5 w-24 bg-blue-600 rounded-full mx-auto lg:mx-0" />
+          </motion.div>
 
-          <div className="max-w-[480px]">
-            <p className="text-xl md:text-2xl text-slate-600 font-medium leading-snug">
-              Track your <span className="text-slate-900 font-bold underline decoration-blue-500/30 underline-offset-4">evolution</span>,
-              analyze your <span className="text-slate-900 font-bold underline decoration-blue-500/30 underline-offset-4">reports</span> and
-              master your <span className="text-slate-900 font-bold border-b-4 border-blue-600/10">projects</span> in one place.
+          <div className="space-y-6 max-w-[520px]">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: focusedField ? 120 : 60 }}
+              className="h-1 bg-blue-600 rounded-full mx-auto lg:mx-0 shadow-[0_0_15px_rgba(37,99,235,0.8)]"
+            />
+
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[0.85] tracking-tighter uppercase italic drop-shadow-sm">
+              GPH <span className="text-blue-500">Report</span>
+            </h1>
+
+            <p className="text-lg md:text-xl text-slate-400 font-medium leading-relaxed tracking-tight">
+              Track your <span className="text-white font-black italic uppercase tracking-tighter">evolution</span>,
+              analyze your <span className="text-white font-black italic uppercase tracking-tighter">reports</span> and
+              master your <span className="text-white font-black italic uppercase tracking-tighter">projects</span> in one place.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 px-4 py-2.5 bg-slate-900 rounded-full text-white/90 text-sm font-bold shadow-lg shadow-slate-900/10 active:scale-95 transition-all cursor-default">
-            <div className="h-2 w-2 bg-blue-400 rounded-full animate-pulse" />
-            <span className="tracking-tight uppercase">High-Performance Research</span>
+          <div className="flex items-center gap-3 px-5 py-2.5 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full text-white/40 text-[9px] font-black uppercase tracking-[0.3em]">
+            <div className={cn("h-1.5 w-1.5 rounded-full", focusedField ? "bg-blue-400 animate-ping" : "bg-slate-700")} />
+            <span>Encrypted Research Protocol Active</span>
           </div>
         </div>
 
-        {/* Right Section: Floating Registration Card */}
-        <div className="w-full lg:w-[480px] animate-in fade-in zoom-in duration-700 py-10 lg:py-0">
-          <div className="bg-slate-950 rounded-[32px] p-8 md:p-10 shadow-2xl shadow-slate-900/40 relative overflow-hidden group">
-            {/* Glossy Effect */}
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+        {/* Right Section: High-End Glassmorphism Form Card */}
+        <motion.div
+          className="w-full lg:w-[480px]"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+          onMouseEnter={() => setIsFormHovered(true)}
+          onMouseLeave={() => setIsFormHovered(false)}
+        >
+          <div className="relative rounded-[32px] p-8 md:p-10 bg-[#030712]/70 backdrop-blur-2xl border border-blue-500/30 ring-1 ring-white/10 shadow-[0_0_100px_-20px_rgba(59,130,246,0.4)] overflow-hidden">
+
+            {/* Top Animated Border Line */}
+            <motion.div
+              className="absolute top-0 left-0 right-0 h-[2px] z-20 overflow-hidden"
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{
+                scaleX: (isFormHovered || focusedField) ? 1 : 0,
+                opacity: (isFormHovered || focusedField) ? 1 : 0
+              }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              <motion.div
+                className="w-full h-full bg-gradient-to-r from-transparent via-blue-500 to-transparent"
+                animate={{
+                  x: (isFormHovered || focusedField) ? ['-100%', '100%'] : '-100%'
+                }}
+                transition={{
+                  x: {
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }
+                }}
+              />
+            </motion.div>
+            <motion.div
+              className="absolute top-0 left-0 right-0 h-[4px] bg-blue-500/20 blur-sm z-20"
+              initial={{ opacity: 0 }}
+              animate={{
+                opacity: (isFormHovered || focusedField) ? 1 : 0
+              }}
+              transition={{ duration: 0.5 }}
+            />
+
+            {/* Ambient Corner Glows */}
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-600/10 blur-[80px] rounded-full" />
+            <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-500/5 blur-[80px] rounded-full" />
 
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-white tracking-tight">Create Account</h2>
               <p className="text-slate-400 text-sm font-medium mt-1">Join the GPH research ecosystem.</p>
             </div>
 
-            <form onSubmit={handleRegister} className="space-y-5">
+            <form onSubmit={handleRegister} className="space-y-2">
               {/* Profile Photo Upload */}
               <div className="flex flex-col items-center gap-4 pb-6 border-b border-white/5 group/avatar">
                 <div
@@ -234,62 +298,70 @@ export default function RegistrationPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">FULL NAME</Label>
-                <div className="relative">
-                  <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <div className="relative group">
+                  <UserIcon className={cn("absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors", focusedField === 'name' ? "text-blue-400" : "text-slate-600 group-hover:text-slate-400")} />
                   <Input
                     id="name"
                     placeholder="Your researcher name"
                     required
-                    className="pl-11 h-12 bg-slate-900/50 border-slate-800 focus:border-blue-500/50 text-white placeholder:text-slate-600 rounded-xl transition-all font-medium border-2"
+                    className="pl-11 h-16 bg-slate-900/10 backdrop-blur-sm border-slate-800/60 focus:border-blue-500/50 text-white placeholder:text-slate-700 focus:ring-4 focus:ring-blue-500/10 rounded-2xl transition-all font-medium text-sm"
                     value={name}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                    onFocus={() => setFocusedField('name')}
+                    onBlur={() => setFocusedField(null)}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">INSTITUTIONAL E-MAIL</Label>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <div className="relative group">
+                  <Mail className={cn("absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors", focusedField === 'email' ? "text-blue-400" : "text-slate-600 group-hover:text-slate-400")} />
                   <Input
                     id="email"
                     type="email"
                     placeholder="researcher@gph.lab"
                     required
-                    className="pl-11 h-12 bg-slate-900/50 border-slate-800 focus:border-blue-500/50 text-white placeholder:text-slate-600 rounded-xl transition-all font-medium border-2"
+                    className="pl-11 h-16 bg-slate-900/10 backdrop-blur-sm border-slate-800/60 focus:border-blue-500/50 text-white placeholder:text-slate-700 focus:ring-4 focus:ring-blue-500/10 rounded-2xl transition-all font-medium text-sm"
                     value={email}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                    onFocus={() => setFocusedField('email')}
+                    onBlur={() => setFocusedField(null)}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">ACCESS PASSWORD</Label>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <div className="relative group">
+                  <Lock className={cn("absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors", focusedField === 'password' ? "text-blue-400" : "text-slate-600 group-hover:text-slate-400")} />
                   <Input
                     id="password"
                     type="password"
                     placeholder="Minimum 6 characters"
                     required
-                    className="pl-11 h-12 bg-slate-900/50 border-slate-800 focus:border-blue-500/50 text-white placeholder:text-slate-600 rounded-xl transition-all font-medium border-2"
+                    className="pl-11 h-16 bg-slate-900/10 backdrop-blur-sm border-slate-800/60 focus:border-blue-500/50 text-white placeholder:text-slate-700 focus:ring-4 focus:ring-blue-500/10 rounded-2xl transition-all font-medium text-sm"
                     value={password}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                    onFocus={() => setFocusedField('password')}
+                    onBlur={() => setFocusedField(null)}
                   />
                 </div>
               </div>
 
               <Button
                 type="submit"
-                className="w-full h-14 bg-blue-600 text-white font-bold text-base hover:bg-blue-500 rounded-2xl transition-all shadow-xl shadow-blue-500/20 active:scale-[0.98] mt-4 group"
+                className="w-full h-14 bg-blue-600 text-white font-bold text-base hover:bg-blue-500 rounded-2xl transition-all shadow-xl shadow-blue-500/20 flex items-center justify-center gap-2 mt-4 group overflow-hidden relative"
                 disabled={loading}
               >
                 {loading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
-                  <span className="flex items-center justify-center gap-2">
+                  <>
                     Register at GPH <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </span>
+                    {/* Glossy Button Shine */}
+                    <div className="absolute top-0 -left-[100%] w-[50%] h-full bg-white/20 skew-x-[45deg] group-hover:left-[150%] transition-all duration-700 ease-in-out" />
+                  </>
                 )}
               </Button>
             </form>
@@ -301,7 +373,7 @@ export default function RegistrationPage() {
               </Link>
             </p>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
