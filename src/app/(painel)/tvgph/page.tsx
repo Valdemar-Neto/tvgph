@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn, getISOWeekString, getISOWeekRange } from '@/lib/utils';
 import { ReportCardImage } from '@/components/reports/ReportCardImage';
 import { LikeButton } from '@/components/reports/LikeButton';
+import { DeleteReportButton } from '@/components/reports/DeleteReportButton';
 import Image from 'next/image';
 import { ReportStatus, AreaName } from '@prisma/client';
 
@@ -50,9 +51,11 @@ export default async function TvgphGlobalFeedPage({
   if (!token) redirect('/login');
 
   let userId = '';
+  let role = 'MEMBER';
   try {
-    const payload = jwt.verify(token, JWT_SECRET) as { userId: string };
+    const payload = jwt.verify(token, JWT_SECRET) as { userId: string; role: string };
     userId = payload.userId;
+    role = payload.role;
   } catch {
     redirect('/login');
   }
@@ -165,6 +168,15 @@ export default async function TvgphGlobalFeedPage({
                     {areaName}
                   </Badge>
                   <div className="flex items-center gap-1.5 text-slate-400 text-[11px] font-bold">
+                    {role === 'PROFESSOR' && (
+                      <DeleteReportButton 
+                        reportId={report.id} 
+                        authorName={report.author.name}
+                        likesCount={report._count.likes}
+                        commentsCount={report._count.comments}
+                        variant="card" 
+                      />
+                    )}
                     <Clock className="h-3 w-3" />
                     <span>RECENT</span>
                   </div>

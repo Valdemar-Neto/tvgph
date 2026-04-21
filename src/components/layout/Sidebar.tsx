@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import {
-  LayoutDashboard,
+  Cpu,
   GraduationCap,
   Calendar,
   Megaphone,
@@ -46,7 +46,7 @@ export function Sidebar({ role, onNavigate }: SidebarProps) {
   ];
 
   if (['MANAGER', 'PROFESSOR'].includes(role)) {
-    navLinks.push({ label: 'Admin Panel', href: '/dashboard', icon: LayoutDashboard });
+    navLinks.push({ label: 'Admin Panel', href: '/dashboard', icon: Cpu });
   }
 
   return (

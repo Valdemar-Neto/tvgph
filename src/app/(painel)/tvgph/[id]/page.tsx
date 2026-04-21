@@ -11,6 +11,7 @@ import { ReviewButton } from './components/ReviewButton';
 import { ReopenButton } from './components/ReopenButton';
 import { LikeButton } from '@/components/reports/LikeButton';
 import { CommentSection } from '@/components/reports/CommentSection';
+import { DeleteReportButton } from '@/components/reports/DeleteReportButton';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
 
@@ -35,7 +36,7 @@ export default async function ReportDetailPage({ params }: { params: { id: strin
       area: true,
       attachments: true,
       _count: {
-        select: { likes: true }
+        select: { likes: true, comments: true }
       },
       likes: {
         where: { userId },
@@ -78,6 +79,15 @@ export default async function ReportDetailPage({ params }: { params: { id: strin
           )}
           {['MANAGER', 'PROFESSOR'].includes(role) && report.status === 'REVIEWED' && (
             <ReopenButton reportId={report.id} />
+          )}
+          {role === 'PROFESSOR' && (
+            <DeleteReportButton 
+              reportId={report.id} 
+              authorName={report.author.name}
+              likesCount={report._count.likes}
+              commentsCount={report._count.comments}
+              redirectAfterDelete={true} 
+            />
           )}
           {role === 'MEMBER' && report.authorId === userId && report.status === 'SUBMITTED' && (
             <Link href={`/tvgph/${report.id}/editar`}>

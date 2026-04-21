@@ -23,6 +23,7 @@ export default function EditarReportPage({ params }: { params: { id: string } })
       Placeholder.configure({ placeholder: 'Loading content...' }),
     ],
     content: '',
+    immediatelyRender: false,
     editorProps: {
       attributes: {
         class: 'prose prose-sm dark:prose-invert max-w-none min-h-[300px] p-4 focus:outline-none',
