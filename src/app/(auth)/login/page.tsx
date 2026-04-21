@@ -12,6 +12,7 @@ import Link from 'next/link';
 import NextImage from 'next/image';
 import { cn } from '@/lib/utils';
 import { CircuitBackground } from '@/components/auth/CircuitBackground';
+import { Audit } from '@/lib/telemetry';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,6 +25,7 @@ export default function LoginPage() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    Audit.log("Tentativa de login iniciada", "info", { email });
 
     try {
       const res = await fetch('/api/auth/login', {
@@ -35,14 +37,17 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
+        Audit.log("Falha na autenticação", "warning", { status: res.status, error: data.error });
         toast.error(data.error || 'Failed to login');
         setLoading(false);
         return;
       }
 
+      Audit.log("Login realizado com sucesso", "info");
       toast.success('Login successful!');
       router.push('/tvgph');
     } catch {
+      Audit.error("Erro inesperado no fluxo de login UI", { action: "login_web_ui" });
       toast.error('An unexpected error occurred.');
       setLoading(false);
     }

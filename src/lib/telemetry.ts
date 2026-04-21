@@ -11,14 +11,14 @@ export const Audit = {
   /**
    * Log an informational event. This creates a breadcrumb in Sentry.
    */
-  log: (message: string, level: LogLevel = "info", data?: Record<string, any>) => {
+  log: (message: string, level: LogLevel = "info", data?: Record<string, unknown>) => {
     Sentry.addBreadcrumb({
       category: "audit",
       message: message,
       level: level,
-      data: data,
+      data: data as Record<string, unknown>, // Cast seguro para o Sentry
     });
-    
+
     // Also log to console in development
     if (process.env.NODE_ENV === "development") {
       console.log(`[Audit:${level.toUpperCase()}] ${message}`, data || "");
@@ -28,11 +28,11 @@ export const Audit = {
   /**
    * Manually capture an exception with extra context.
    */
-  error: (error: any, context?: Record<string, any>) => {
+  error: (error: unknown, context?: Record<string, unknown>) => {
     Sentry.captureException(error, {
       extra: context,
     });
-    
+
     if (process.env.NODE_ENV === "development") {
       console.error("[Audit:ERROR]", error, context);
     }
@@ -41,7 +41,7 @@ export const Audit = {
   /**
    * Send a specific message to Sentry without a full crash.
    */
-  notify: (message: string, data?: Record<string, any>) => {
+  notify: (message: string, data?: Record<string, unknown>) => {
     Sentry.captureMessage(message, {
       extra: data,
     });
