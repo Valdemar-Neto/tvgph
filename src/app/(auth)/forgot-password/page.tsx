@@ -19,6 +19,11 @@ export default function ForgotPasswordPage() {
   const [success, setSuccess] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isFormHovered, setIsFormHovered] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -54,8 +59,8 @@ export default function ForgotPasswordPage() {
 
       <motion.div
         className="w-full max-w-md relative z-20"
-        initial={{ opacity: 1, y: 0 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={mounted ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.8 }}
         onMouseEnter={() => setIsFormHovered(true)}
         onMouseLeave={() => setIsFormHovered(false)}

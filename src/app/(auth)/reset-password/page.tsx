@@ -102,6 +102,11 @@ function ResetPasswordForm({ focusedField, setFocusedField }: ResetFormProps) {
 export default function ResetPasswordPage() {
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isFormHovered, setIsFormHovered] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 overflow-hidden relative font-mono selection:bg-blue-500/30 px-4">
@@ -111,8 +116,8 @@ export default function ResetPasswordPage() {
 
       <motion.div
         className="w-full max-w-md relative z-20"
-        initial={{ opacity: 1, y: 0 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={mounted ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.8 }}
         onMouseEnter={() => setIsFormHovered(true)}
         onMouseLeave={() => setIsFormHovered(false)}

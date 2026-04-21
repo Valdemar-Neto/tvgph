@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,11 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isFormHovered, setIsFormHovered] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -105,8 +110,8 @@ export default function LoginPage() {
         {/* Right Section: High-End Glassmorphism Form Card */}
         <motion.div
           className="w-full lg:w-[480px] relative z-20"
-          initial={{ opacity: 1, x: 0 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, x: 20 }}
+          animate={mounted ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
           transition={{ duration: 0.8 }}
           onMouseEnter={() => setIsFormHovered(true)}
           onMouseLeave={() => setIsFormHovered(false)}
