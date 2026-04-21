@@ -3,21 +3,25 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export const CircuitBackground = () => {
+interface CircuitBackgroundProps {
+  dark?: boolean;
+}
+
+export const CircuitBackground = ({ dark = true }: CircuitBackgroundProps) => {
   return (
-    <div className="absolute inset-0 z-0 bg-black overflow-hidden pointer-events-none">
+    <div className={`absolute inset-0 z-0 ${dark ? 'bg-black' : 'bg-slate-50/50'} overflow-hidden pointer-events-none`}>
       {/* Grid Pattern Layer */}
       <div 
-        className="absolute inset-0 opacity-[0.3]"
+        className="absolute inset-0 opacity-[0.2] dark:opacity-[0.3]"
         style={{
-          backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.25) 1px, transparent 1px), 
-                           linear-gradient(90deg, rgba(59, 130, 246, 0.25) 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.15) 1px, transparent 1px), 
+                           linear-gradient(90deg, rgba(59, 130, 246, 0.15) 1px, transparent 1px)`,
           backgroundSize: '40px 40px',
         }}
       />
 
       {/* Animated Circuit Lines */}
-      <svg className="absolute inset-0 w-full h-full opacity-80">
+      <svg className="absolute inset-0 w-full h-full opacity-60 dark:opacity-80">
         <defs>
           <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="transparent" />
@@ -68,7 +72,7 @@ export const CircuitBackground = () => {
       </svg>
 
       {/* Radial Vignette for Focus */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)] opacity-40" />
+      <div className={`absolute inset-0 ${dark ? 'bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)] opacity-40' : 'bg-[radial-gradient(circle_at_center,transparent_0%,rgba(248,250,252,0.8)_100%)] opacity-20'}`} />
     </div>
   );
 };

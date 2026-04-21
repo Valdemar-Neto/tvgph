@@ -61,13 +61,13 @@ function ResetPasswordForm({ focusedField, setFocusedField, isFormHovered }: any
       <div className="space-y-2">
         <Label htmlFor="password" className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">NEW PASSWORD</Label>
         <div className="relative group">
-          <Lock className={cn("absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors", focusedField === 'password' ? "text-blue-400" : "text-slate-600 group-hover:text-slate-400")} />
+          <Lock className={cn("absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 transition-all duration-300 z-50", focusedField === 'password' ? "text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.5)]" : "text-slate-400 group-hover:text-slate-300")} />
           <Input
             id="password"
             type="password"
             placeholder="Enter at least 6 characters"
             required
-            className="pl-11 h-16 bg-slate-900/10 backdrop-blur-sm border-slate-800/60 focus:border-blue-500/50 text-white placeholder:text-slate-700 focus:ring-4 focus:ring-blue-500/10 rounded-2xl transition-all font-medium text-sm"
+            className="pl-11 h-16 !bg-slate-950/50 backdrop-blur-sm border-slate-800/60 focus:border-blue-500/50 !text-white placeholder:text-slate-600 focus:ring-4 focus:ring-blue-500/10 rounded-2xl transition-all font-medium text-sm relative z-10"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onFocus={() => setFocusedField('password')}
@@ -99,10 +99,10 @@ export default function ResetPasswordPage() {
   const [isFormHovered, setIsFormHovered] = useState(false);
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-black overflow-hidden relative font-mono selection:bg-blue-500/30 px-4">
+    <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 overflow-hidden relative font-mono selection:bg-blue-500/30 px-4">
       
       {/* TECH GENERATIVE BACKGROUND */}
-      <CircuitBackground />
+      <CircuitBackground dark={false} />
 
       <motion.div
         className="w-full max-w-md relative z-10"
@@ -112,7 +112,7 @@ export default function ResetPasswordPage() {
         onMouseEnter={() => setIsFormHovered(true)}
         onMouseLeave={() => setIsFormHovered(false)}
       >
-        <div className="relative rounded-[32px] p-8 md:p-10 bg-[#030712]/70 backdrop-blur-2xl border border-blue-500/30 ring-1 ring-white/10 shadow-[0_0_100px_-20px_rgba(59,130,246,0.4)] overflow-hidden">
+        <div className="relative rounded-[32px] p-8 md:p-10 bg-[#030712] backdrop-blur-2xl border border-blue-500/30 ring-1 ring-white/10 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden dark">
           
           {/* Top Animated Border Line */}
           <motion.div 
@@ -137,7 +137,7 @@ export default function ResetPasswordPage() {
 
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-white tracking-tight uppercase italic">New Password</h2>
-            <p className="text-slate-400 text-sm font-medium mt-1">Create a strong protocol password to secure your account.</p>
+            <p className="text-slate-500 text-sm font-medium mt-1">Create a strong protocol password to secure your account.</p>
           </div>
 
           <Suspense fallback={<div className="text-center p-8 text-blue-400 animate-pulse">Loading secure link...</div>}>
