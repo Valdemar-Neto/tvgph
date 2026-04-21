@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Bell, Clock, MousePointer2, X as CloseIcon } from 'lucide-react';
+import { Search, Bell, Clock, MousePointer2, X as CloseIcon, Menu } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { getPendingReportsAction } from '@/app/actions/manager';
@@ -18,7 +18,17 @@ interface PendingReport {
   isoWeek: string;
 }
 
-export function Header({ userName, avatarUrl, role }: { userName?: string, avatarUrl?: string | null, role?: string }) {
+export function Header({ 
+  userName, 
+  avatarUrl, 
+  role,
+  onMenuClick 
+}: { 
+  userName?: string, 
+  avatarUrl?: string | null, 
+  role?: string,
+  onMenuClick?: () => void 
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -79,10 +89,17 @@ export function Header({ userName, avatarUrl, role }: { userName?: string, avata
   }, []);
 
   return (
-    <header className="h-16 border-b border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-30 px-8 flex items-center justify-between">
+    <header className="h-16 border-b border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-30 px-4 md:px-8 flex items-center justify-between gap-4">
+      {/* Mobile Menu Toggle */}
+      <button 
+        onClick={onMenuClick}
+        className="lg:hidden p-2 -ml-1 rounded-full text-slate-600 hover:bg-slate-100 transition-colors"
+      >
+        <Menu className="h-6 w-6" />
+      </button>
 
       {/* Search Bar */}
-      <div className="relative w-full max-w-md group">
+      <div className="relative w-full max-w-md group flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
         <Input
           placeholder="Search reports, members or projects..."

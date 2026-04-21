@@ -20,9 +20,10 @@ import { toast } from 'sonner';
 
 interface SidebarProps {
   role: string;
+  onNavigate?: () => void;
 }
 
-export function Sidebar({ role }: SidebarProps) {
+export function Sidebar({ role, onNavigate }: SidebarProps) {
   const pathname = usePathname();
 
   async function handleLogout() {
@@ -49,7 +50,7 @@ export function Sidebar({ role }: SidebarProps) {
   }
 
   return (
-    <aside className="w-full md:w-64 bg-white border-r border-slate-100 flex flex-col justify-between md:h-screen sticky top-0 overflow-hidden shadow-sm">
+    <aside className="w-full h-full bg-white border-r border-slate-100 flex flex-col justify-between overflow-hidden shadow-sm">
       <div className="p-6 flex flex-col h-full">
         {/* Brand Logo */}
         {/* Brand Logo */}
@@ -70,6 +71,7 @@ export function Sidebar({ role }: SidebarProps) {
               <Link
                 key={link.label}
                 href={link.href}
+                onClick={() => onNavigate?.()}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${isActive
                   ? 'bg-primary/5 text-primary'
                   : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
@@ -87,7 +89,7 @@ export function Sidebar({ role }: SidebarProps) {
 
         {/* Action Button */}
         <div className="mt-auto pt-6 space-y-3">
-          <Link href="/tvgph/novo">
+          <Link href="/tvgph/novo" onClick={() => onNavigate?.()}>
             <Button className="w-full h-11 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:bg-primary/90 flex items-center gap-2">
               <Plus className="h-4 w-4" />
               New Report
