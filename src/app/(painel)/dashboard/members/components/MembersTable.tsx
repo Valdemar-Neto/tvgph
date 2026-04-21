@@ -19,6 +19,7 @@ interface User {
   email: string;
   role: string;
   active: boolean;
+  avatarUrl: string | null;
   userAreas: { area: Area }[];
 }
 
@@ -158,10 +159,10 @@ export function MembersTable({ users, areas, currentRole }: { users: User[]; are
                       )}>
                         <div className="h-full w-full relative">
                           <Image
-                            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`}
+                            src={user.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`}
                             alt={user.name}
                             fill
-                            unoptimized={true}
+                            unoptimized={!user.avatarUrl}
                             className="object-cover"
                           />
                         </div>
