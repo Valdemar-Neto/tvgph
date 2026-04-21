@@ -11,7 +11,12 @@ import { Lock, ChevronRight, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CircuitBackground } from '@/components/auth/CircuitBackground';
 
-function ResetPasswordForm({ focusedField, setFocusedField }: any) {
+interface ResetFormProps {
+  focusedField: string | null;
+  setFocusedField: (field: string | null) => void;
+}
+
+function ResetPasswordForm({ focusedField, setFocusedField }: ResetFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
@@ -144,7 +149,6 @@ export default function ResetPasswordPage() {
             <ResetPasswordForm
               focusedField={focusedField}
               setFocusedField={setFocusedField}
-              isFormHovered={isFormHovered}
             />
           </Suspense>
         </div>

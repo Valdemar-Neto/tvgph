@@ -57,8 +57,8 @@ export function DeleteReportButton({
       } else {
         router.refresh();
       }
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch {
+      toast.error("Delete failed. Try again.");
     } finally {
       setIsDeleting(false);
     }

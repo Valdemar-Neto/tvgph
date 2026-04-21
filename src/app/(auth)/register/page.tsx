@@ -24,7 +24,7 @@ export default function RegistrationPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [, setAreas] = useState<Area[]>([]);
-  const [selectedAreaIds,] = useState<any[]>([]);
+  const [selectedAreaIds,] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
