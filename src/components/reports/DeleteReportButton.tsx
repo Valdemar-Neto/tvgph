@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Trash2, Loader2, AlertTriangle, X, ShieldAlert, Heart, MessageCircle } from 'lucide-react';
+import { Trash2, Loader2, X, Heart, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -17,7 +17,6 @@ interface DeleteReportButtonProps {
   redirectAfterDelete?: boolean;
 }
 
-const CONFIRMATION_TEXT = 'delete this activity';
 
 export function DeleteReportButton({
   reportId,

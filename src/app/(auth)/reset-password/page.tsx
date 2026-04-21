@@ -11,7 +11,7 @@ import { Lock, ChevronRight, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CircuitBackground } from '@/components/auth/CircuitBackground';
 
-function ResetPasswordForm({ focusedField, setFocusedField, isFormHovered }: any) {
+function ResetPasswordForm({ focusedField, setFocusedField }: any) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
@@ -75,7 +75,7 @@ function ResetPasswordForm({ focusedField, setFocusedField, isFormHovered }: any
           />
         </div>
       </div>
-      
+
       <Button
         type="submit"
         className="w-full h-14 bg-blue-600 text-white font-bold text-base hover:bg-blue-500 rounded-2xl transition-all shadow-xl shadow-blue-500/20 flex items-center justify-center gap-2 mt-4 group overflow-hidden relative"
@@ -95,12 +95,12 @@ function ResetPasswordForm({ focusedField, setFocusedField, isFormHovered }: any
 }
 
 export default function ResetPasswordPage() {
-  const [focusedField, setFocusedField] = useState<string|null>(null);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isFormHovered, setIsFormHovered] = useState(false);
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 overflow-hidden relative font-mono selection:bg-blue-500/30 px-4">
-      
+
       {/* TECH GENERATIVE BACKGROUND */}
       <CircuitBackground dark={false} />
 
@@ -113,23 +113,23 @@ export default function ResetPasswordPage() {
         onMouseLeave={() => setIsFormHovered(false)}
       >
         <div className="relative rounded-[32px] p-8 md:p-10 bg-[#030712] backdrop-blur-2xl border border-blue-500/30 ring-1 ring-white/10 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden dark">
-          
+
           {/* Top Animated Border Line */}
-          <motion.div 
+          <motion.div
             className="absolute top-0 left-0 right-0 h-[2px] z-20 overflow-hidden"
             initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ 
+            animate={{
               scaleX: (isFormHovered || focusedField) ? 1 : 0,
               opacity: (isFormHovered || focusedField) ? 1 : 0
             }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
           >
-            <motion.div 
+            <motion.div
               className="w-full h-full bg-gradient-to-r from-transparent via-blue-500 to-transparent"
-              animate={{ 
+              animate={{
                 x: (isFormHovered || focusedField) ? ['-100%', '100%'] : '-100%'
               }}
-              transition={{ 
+              transition={{
                 x: { duration: 2, repeat: Infinity, ease: "linear" }
               }}
             />
@@ -141,10 +141,10 @@ export default function ResetPasswordPage() {
           </div>
 
           <Suspense fallback={<div className="text-center p-8 text-blue-400 animate-pulse">Loading secure link...</div>}>
-            <ResetPasswordForm 
-              focusedField={focusedField} 
-              setFocusedField={setFocusedField} 
-              isFormHovered={isFormHovered} 
+            <ResetPasswordForm
+              focusedField={focusedField}
+              setFocusedField={setFocusedField}
+              isFormHovered={isFormHovered}
             />
           </Suspense>
         </div>
