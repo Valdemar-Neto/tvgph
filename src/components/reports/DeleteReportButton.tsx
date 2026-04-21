@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { Audit } from '@/lib/telemetry';
 
 interface DeleteReportButtonProps {
   reportId: string;
@@ -39,6 +40,8 @@ export function DeleteReportButton({
     if (confirmationInput !== expectedString) return;
 
     setIsDeleting(true);
+    Audit.log("Starting activity purge", "warning", { reportId, path: expectedString });
+
     try {
       const res = await fetch(`/api/reports/${reportId}`, {
         method: 'DELETE',
@@ -49,6 +52,7 @@ export function DeleteReportButton({
         throw new Error(data.error || 'Failed to delete report');
       }
 
+      Audit.log("Activity removed successfully", "info", { reportId });
       toast.success('Activity permanently removed.');
       setShowModal(false);
 
@@ -58,6 +62,7 @@ export function DeleteReportButton({
         router.refresh();
       }
     } catch {
+      Audit.error("Falha na purga de atividade (Delete Report)", { reportId, action: "delete_report" });
       toast.error("Delete failed. Try again.");
     } finally {
       setIsDeleting(false);
@@ -151,7 +156,7 @@ export function DeleteReportButton({
               <div className="w-full space-y-4 pt-4 border-t border-slate-800">
                 <div className="space-y-4">
                   <label className="text-sm font-bold text-slate-200 block">
-                    To confirm, type "{expectedString}" in the box below
+                    To confirm, type &quot;{expectedString}&quot;in the box below
                   </label>
                   <Input
                     value={confirmationInput}

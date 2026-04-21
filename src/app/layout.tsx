@@ -20,6 +20,8 @@ export const metadata: Metadata = {
   description: "Group Report Management",
 };
 
+import * as Sentry from "@sentry/nextjs";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -30,7 +32,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <Sentry.ErrorBoundary fallback={<p>An error occurred. Please try again later.</p>}>
+          {children}
+        </Sentry.ErrorBoundary>
         <Toaster />
       </body>
     </html>
