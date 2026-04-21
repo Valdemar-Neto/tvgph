@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -63,26 +62,23 @@ export default function LoginPage() {
 
         {/* Left Section: Branding & Slogan */}
         <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left space-y-10">
-          <motion.div
-            className="relative"
-            animate={{
-              scale: (isFormHovered || focusedField) ? 1.2 : 1,
-              filter: (isFormHovered || focusedField)
-                ? "drop-shadow(0 0 70px rgba(59,130,246,0.3))"
-                : "drop-shadow(0 0 50px rgba(59,130,246,0.1))"
-            }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          <div
+            className={cn(
+              "relative transition-all duration-700 ease-out",
+              (isFormHovered || focusedField) ? "scale-110 drop-shadow-[0_0_50px_rgba(59,130,246,0.3)]" : "scale-100 drop-shadow-[0_0_30px_rgba(59,130,246,0.1)]"
+            )}
           >
             <div className="h-40 w-40 md:h-56 md:w-56 lg:h-64 lg:w-64 bg-[#030712] backdrop-blur-xl rounded-[48px] flex items-center justify-center p-8 border border-white/5 shadow-2xl relative overflow-hidden group">
               <NextImage src="/gph-icon.png" alt="GPH Logo" width={300} height={300} className="h-full w-full object-contain relative z-10 brightness-0 invert" priority unoptimized />
             </div>
-          </motion.div>
+          </div>
 
           <div className="space-y-6 max-w-[520px]">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: focusedField ? 120 : 60 }}
-              className="h-1 bg-blue-600 rounded-full mx-auto lg:mx-0 shadow-[0_0_15px_rgba(37,99,235,0.8)]"
+            <div
+              className={cn(
+                "h-1 bg-blue-600 rounded-full mx-auto lg:mx-0 shadow-[0_0_15px_rgba(37,99,235,0.8)] transition-all duration-500",
+                focusedField ? "w-[120px]" : "w-[60px]"
+              )}
             />
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 leading-[0.85] tracking-tighter uppercase italic drop-shadow-sm">
@@ -97,54 +93,38 @@ export default function LoginPage() {
           </div>
 
           <div className="flex items-center gap-3 px-5 py-2.5 bg-slate-900 rounded-full text-white/70 text-[9px] font-black uppercase tracking-[0.3em]">
-            <div className={cn("h-1.5 w-1.5 rounded-full", focusedField ? "bg-blue-400 animate-ping" : "bg-slate-700")} />
+            <div className={cn("h-1.5 w-1.5 rounded-full transition-all duration-300", focusedField ? "bg-blue-400 animate-ping" : "bg-slate-700")} />
             <span>Encrypted Research Protocol Active</span>
           </div>
         </div>
 
         {/* Right Section: High-End Glassmorphism Form Card */}
-        <motion.div
-          className="w-full lg:w-[480px] relative z-20"
-          initial={{ opacity: 1, x: 0 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
+        <div
+          className="w-full lg:w-[480px] relative z-20 transition-all duration-700"
           onMouseEnter={() => setIsFormHovered(true)}
           onMouseLeave={() => setIsFormHovered(false)}
         >
-          <div className="relative rounded-[32px] p-10 md:p-14 bg-[#030712] backdrop-blur-2xl border border-blue-500/30 ring-1 ring-white/10 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden dark">
+          <div className={cn(
+            "relative rounded-[32px] p-10 md:p-14 bg-[#030712] backdrop-blur-2xl border border-blue-500/30 ring-1 ring-white/10 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden dark transition-all duration-700",
+            (isFormHovered || focusedField) ? "border-blue-500/50 shadow-blue-500/20" : ""
+          )}>
 
             {/* Top Animated Border Line */}
-            <motion.div
-              className="absolute top-0 left-0 right-0 h-[2px] z-20 overflow-hidden"
-              initial={{ scaleX: 0, opacity: 0 }}
-              animate={{
-                scaleX: (isFormHovered || focusedField) ? 1 : 0,
-                opacity: (isFormHovered || focusedField) ? 1 : 0
-              }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-            >
-              <motion.div
-                className="w-full h-full bg-gradient-to-r from-transparent via-blue-500 to-transparent"
-                animate={{
-                  x: (isFormHovered || focusedField) ? ['-100%', '100%'] : '-100%'
-                }}
-                transition={{
-                  x: {
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "linear"
-                  }
-                }}
+            <div className={cn(
+                "absolute top-0 left-0 right-0 h-[2px] z-20 overflow-hidden transition-all duration-500",
+                (isFormHovered || focusedField) ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
+            )}>
+              <div
+                className={cn(
+                    "w-full h-full bg-gradient-to-r from-transparent via-blue-500 to-transparent",
+                    (isFormHovered || focusedField) ? "animate-[shimmer_2s_infinite_linear]" : ""
+                )}
               />
-            </motion.div>
-            <motion.div
-              className="absolute top-0 left-0 right-0 h-[4px] bg-blue-500/20 blur-sm z-20"
-              initial={{ opacity: 0 }}
-              animate={{
-                opacity: (isFormHovered || focusedField) ? 1 : 0
-              }}
-              transition={{ duration: 0.5 }}
-            />
+            </div>
+            <div className={cn(
+                "absolute top-0 left-0 right-0 h-[4px] bg-blue-500/20 blur-sm z-20 transition-opacity duration-500",
+                (isFormHovered || focusedField) ? "opacity-100" : "opacity-0"
+            )} />
 
             {/* Ambient Corner Glows */}
             <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-600/10 blur-[80px] rounded-full" />
@@ -177,7 +157,7 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between px-1">
                   <Label htmlFor="password" className="text-[10px] font-bold uppercase tracking-widest text-slate-500">PASSWORD</Label>
-                  <Link href="/forgot-password" opacity-1 className="text-[10px] font-bold text-slate-500 hover:text-blue-400 transition-colors uppercase tracking-widest">Forgot?</Link>
+                  <Link href="/forgot-password" className="text-[10px] font-bold text-slate-500 hover:text-blue-400 transition-colors uppercase tracking-widest">Forgot?</Link>
                 </div>
                 <div className="relative group">
                   <Lock className={cn("absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 transition-all duration-300 z-50", focusedField === 'password' ? "text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.5)]" : "text-slate-400 group-hover:text-slate-300")} />
@@ -219,8 +199,14 @@ export default function LoginPage() {
               </Link>
             </p>
           </div>
-        </motion.div>
+        </div>
       </div>
+      <style jsx global>{`
+        @keyframes shimmer {
+          from { transform: translateX(-100%); }
+          to { transform: translateX(100%); }
+        }
+      `}</style>
     </div>
   );
 }

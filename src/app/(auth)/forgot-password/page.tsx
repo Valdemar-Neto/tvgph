@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -52,36 +51,28 @@ export default function ForgotPasswordPage() {
       {/* TECH GENERATIVE BACKGROUND */}
       <CircuitBackground dark={false} />
 
-      <motion.div
-        className="w-full max-w-md relative z-20"
-        initial={{ opacity: 1, y: 0 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+      <div
+        className="w-full max-w-md relative z-20 transition-all duration-700"
         onMouseEnter={() => setIsFormHovered(true)}
         onMouseLeave={() => setIsFormHovered(false)}
       >
-        <div className="relative rounded-[32px] p-8 md:p-10 bg-[#030712] backdrop-blur-2xl border border-blue-500/30 ring-1 ring-white/10 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden dark">
+        <div className={cn(
+          "relative rounded-[32px] p-8 md:p-10 bg-[#030712] backdrop-blur-2xl border border-blue-500/30 ring-1 ring-white/10 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden dark transition-all duration-700",
+          (isFormHovered || focusedField) ? "border-blue-500/50 shadow-blue-500/20" : ""
+        )}>
           
           {/* Top Animated Border Line */}
-          <motion.div 
-            className="absolute top-0 left-0 right-0 h-[2px] z-20 overflow-hidden"
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ 
-              scaleX: (isFormHovered || focusedField) ? 1 : 0,
-              opacity: (isFormHovered || focusedField) ? 1 : 0
-            }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
+          <div 
+            className={cn(
+              "absolute top-0 left-0 right-0 h-[2px] z-20 overflow-hidden transition-all duration-500",
+              (isFormHovered || focusedField) ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
+            )}
           >
-            <motion.div 
-              className="w-full h-full bg-gradient-to-r from-transparent via-blue-500 to-transparent"
-              animate={{ 
-                x: (isFormHovered || focusedField) ? ['-100%', '100%'] : '-100%'
-              }}
-              transition={{ 
-                x: { duration: 2, repeat: Infinity, ease: "linear" }
-              }}
-            />
-          </motion.div>
+            <div className={cn(
+                "w-full h-full bg-gradient-to-r from-transparent via-blue-500 to-transparent",
+                (isFormHovered || focusedField) ? "animate-[shimmer_2s_infinite_linear]" : ""
+            )} />
+          </div>
 
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-white tracking-tight uppercase italic">Recovery</h2>
@@ -146,7 +137,13 @@ export default function ForgotPasswordPage() {
             </div>
           )}
         </div>
-      </motion.div>
+      </div>
+      <style jsx global>{`
+        @keyframes shimmer {
+          from { transform: translateX(-100%); }
+          to { transform: translateX(100%); }
+        }
+      `}</style>
     </div>
   );
 }
