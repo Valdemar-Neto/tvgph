@@ -31,12 +31,7 @@ export default function RegistrationPage() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isFormHovered, setIsFormHovered] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -199,8 +194,8 @@ export default function RegistrationPage() {
         {/* Right Section: High-End Glassmorphism Form Card */}
         <motion.div
           className="w-full lg:w-[480px] relative z-20"
-          initial={{ opacity: 0, x: 20 }}
-          animate={mounted ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
+          initial={{ opacity: 1, x: 0 }}
+          animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
           onMouseEnter={() => setIsFormHovered(true)}
           onMouseLeave={() => setIsFormHovered(false)}
