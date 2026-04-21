@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
-import { Menu, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -19,10 +19,10 @@ export function DashboardShell({ children, role, userName, avatarUrl }: Dashboar
 
   return (
     <div className="flex h-screen w-full bg-slate-50 overflow-hidden">
-      
+
       {/* Overlay for mobile */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
           onClick={() => setIsSidebarOpen(false)}
         />
@@ -34,11 +34,11 @@ export function DashboardShell({ children, role, userName, avatarUrl }: Dashboar
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <Sidebar role={role} onNavigate={() => setIsSidebarOpen(false)} />
-        
+
         {/* Close button for mobile inside sidebar */}
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <Button
+          variant="ghost"
+          size="icon"
           className="absolute top-4 right-2 lg:hidden text-slate-400"
           onClick={() => setIsSidebarOpen(false)}
         >
@@ -48,12 +48,12 @@ export function DashboardShell({ children, role, userName, avatarUrl }: Dashboar
 
       {/* Main Container */}
       <div className="flex-1 flex flex-col h-screen min-w-0 overflow-hidden">
-        
-        <Header 
-          userName={userName} 
-          avatarUrl={avatarUrl} 
-          role={role} 
-          onMenuClick={() => setIsSidebarOpen(true)} 
+
+        <Header
+          userName={userName}
+          avatarUrl={avatarUrl}
+          role={role}
+          onMenuClick={() => setIsSidebarOpen(true)}
         />
 
         {/* Scrollable Content Area */}
