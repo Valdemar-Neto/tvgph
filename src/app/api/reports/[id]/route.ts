@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getAuthSession } from '@/lib/auth';
+import { DeleteObjectCommand } from '@aws-sdk/client-s3';
+import r2Client from '@/lib/r2';
 import { getISOWeekString } from '@/lib/utils';
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
@@ -80,13 +82,43 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   const auth = getAuthSession();
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const report = await prisma.report.findUnique({ where: { id: params.id } });
+  const report = await prisma.report.findUnique({ 
+    where: { id: params.id },
+    include: { attachments: true }
+  });
   if (!report) return NextResponse.json({ error: 'Report not found' }, { status: 404 });
 
   if (report.authorId !== auth.userId && !['MANAGER', 'PROFESSOR'].includes(auth.role)) {
     return NextResponse.json({ error: 'Access denied' }, { status: 403 });
   }
 
+  // Physical cleanup in Cloudflare R2
+  const BUCKET_NAME = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+  const PUBLIC_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL;
+
+  if (BUCKET_NAME && report.attachments.length > 0) {
+    for (const file of report.attachments) {
+      try {
+        // Extract KEY from URL (part after the domain)
+        let key = '';
+        if (PUBLIC_URL && file.url.includes(PUBLIC_URL)) {
+          key = file.url.split(`${PUBLIC_URL}/`)[1];
+        } else if (file.url.includes('.com/')) {
+          key = file.url.split('.com/')[1];
+        }
+
+        if (key) {
+          await r2Client.send(new DeleteObjectCommand({
+            Bucket: BUCKET_NAME,
+            Key: key,
+          }));
+        }
+      } catch (err) {
+        console.error(`Error deleting file from R2 (${file.url}):`, err);
+      }
+    }
+  }
+
   await prisma.report.delete({ where: { id: params.id } });
-  return NextResponse.json({ message: 'Report removed successfully' });
+  return NextResponse.json({ message: 'Report and associated files removed successfully' });
 }
