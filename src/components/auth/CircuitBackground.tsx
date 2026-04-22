@@ -1,12 +1,32 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface CircuitBackgroundProps {
   dark?: boolean;
 }
 
 export const CircuitBackground = ({ dark = true }: CircuitBackgroundProps) => {
+  const [mounted, setMounted] = useState(false);
+  const [vFlows, setVFlows] = useState<{ dur: string; begin: string }[]>([]);
+  const [hFlows, setHFlows] = useState<{ dur: string; begin: string }[]>([]);
+
+  useEffect(() => {
+    // Generate random values only on client-side to avoid hydration mismatch
+    const v = [...Array(15)].map(() => ({
+      dur: `${15 + Math.random() * 20}s`,
+      begin: `${Math.random() * 10}s`
+    }));
+    const h = [...Array(10)].map(() => ({
+      dur: `${20 + Math.random() * 25}s`,
+      begin: `${Math.random() * 12}s`
+    }));
+    
+    setVFlows(v);
+    setHFlows(h);
+    setMounted(true);
+  }, []);
+
   return (
     <div className={`absolute inset-0 z-0 ${dark ? 'bg-black' : 'bg-white'} overflow-hidden pointer-events-none`}>
       {/* Grid Pattern Layer */}
@@ -19,7 +39,7 @@ export const CircuitBackground = ({ dark = true }: CircuitBackgroundProps) => {
         }}
       />
 
-      {/* Animated Circuit Lines via SVG + CSS */}
+      {/* Animated Circuit Lines via SVG Animations */}
       <svg className="absolute inset-0 w-full h-full opacity-60 dark:opacity-80">
         <defs>
           <linearGradient id="line-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -35,59 +55,50 @@ export const CircuitBackground = ({ dark = true }: CircuitBackgroundProps) => {
         </defs>
 
         {/* Vertical Data Flows */}
-        {[...Array(15)].map((_, i) => (
+        {mounted && vFlows.map((flow, i) => (
           <rect
             key={`v-${i}`}
             x={`${(i + 1) * 7.5}%`}
-            y="-100%"
+            y="-40%"
             width="1"
             height="40%"
             fill="url(#line-gradient)"
-            className="animate-flow-v"
-            style={{ 
-              animationDelay: `${Math.random() * 8}s`,
-              animationDuration: `${10 + Math.random() * 15}s`
-            }}
-          />
+          >
+            <animate
+              attributeName="y"
+              from="-40%"
+              to="100%"
+              dur={flow.dur}
+              begin={flow.begin}
+              repeatCount="indefinite"
+            />
+          </rect>
         ))}
 
         {/* Horizontal Data Flows */}
-        {[...Array(10)].map((_, i) => (
+        {mounted && hFlows.map((flow, i) => (
           <rect
             key={`h-${i}`}
-            x="-100%"
+            x="-40%"
             y={`${(i + 1) * 12}%`}
             width="40%"
             height="1"
             fill="url(#line-gradient-h)"
-            className="animate-flow-h"
-            style={{ 
-              animationDelay: `${Math.random() * 10}s`,
-              animationDuration: `${15 + Math.random() * 20}s`
-            }}
-          />
+          >
+            <animate
+              attributeName="x"
+              from="-40%"
+              to="100%"
+              dur={flow.dur}
+              begin={flow.begin}
+              repeatCount="indefinite"
+            />
+          </rect>
         ))}
       </svg>
 
       {/* Radial Vignette for Focus */}
       <div className={`absolute inset-0 ${dark ? 'bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)] opacity-40' : 'bg-[radial-gradient(circle_at_center,transparent_0%,rgba(255,255,255,0.7)_100%)] opacity-30'}`} />
-
-      <style jsx>{`
-        @keyframes flowV {
-          0% { transform: translateY(-100%); }
-          100% { transform: translateY(400%); }
-        }
-        @keyframes flowH {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(400%); }
-        }
-        .animate-flow-v {
-          animation: flowV linear infinite;
-        }
-        .animate-flow-h {
-          animation: flowH linear infinite;
-        }
-      `}</style>
     </div>
   );
 };
