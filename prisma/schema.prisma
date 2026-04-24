@@ -19,6 +19,7 @@ model User {
   createdAt         DateTime     @default(now())
   resetToken        String?
   resetTokenExpires DateTime?
+  lastResetRequestAt DateTime?
   attendance        Attendance[]
   comments          Comment[]
   likes             Like[]

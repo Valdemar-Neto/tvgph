@@ -31,7 +31,8 @@ export default function ForgotPasswordPage() {
       });
 
       if (!res.ok) {
-        toast.error('An error occurred while processing the request.');
+        const data = await res.json();
+        toast.error(data.error || 'An error occurred while processing the request.');
         setLoading(false);
         return;
       }

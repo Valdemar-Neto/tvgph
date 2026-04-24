@@ -20,6 +20,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'If the email exists, a link has been sent.' }, { status: 200 });
     }
 
+    // Rate Limiting: 1 minute cooldown
+    if (user.lastResetRequestAt) {
+      const cooldownTime = 1 * 60 * 1000; // 1 minute
+      const timeSinceLastRequest = Date.now() - new Date(user.lastResetRequestAt).getTime();
+      
+      if (timeSinceLastRequest < cooldownTime) {
+        const secondsLeft = Math.ceil((cooldownTime - timeSinceLastRequest) / 1000);
+        return NextResponse.json({ 
+          error: `Please wait ${secondsLeft} seconds before requesting a new link.` 
+        }, { status: 429 }); // 429 is Too Many Requests
+      }
+    }
+
     // Generate specific generic Node secure token (32 bytes in HEX)
     const resetToken = crypto.randomBytes(32).toString('hex');
     const tokenExpires = new Date(Date.now() + 3600000); // 1 hour validity
@@ -28,7 +41,8 @@ export async function POST(request: Request) {
       where: { email },
       data: {
         resetToken,
-        resetTokenExpires: tokenExpires
+        resetTokenExpires: tokenExpires,
+        lastResetRequestAt: new Date()
       }
     });
 
