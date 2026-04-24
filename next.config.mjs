@@ -14,6 +14,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'pub-8aa1e7e1a2904f14a72ae6f3075b435c.r2.dev',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ui-avatars.com',
+        pathname: '/**',
       }
     ],
   },
