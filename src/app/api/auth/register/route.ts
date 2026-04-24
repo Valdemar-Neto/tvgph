@@ -8,7 +8,7 @@ const registerSchema = z.object({
   email: z.string().email('Invalid email'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   areaIds: z.array(z.string().uuid()).optional(),
-  avatarUrl: z.string().url().optional(),
+  avatarUrl: z.string().url().nullish(),
 });
 
 export async function POST(req: Request) {
@@ -57,7 +57,8 @@ export async function POST(req: Request) {
       user: { id: user.id, name: user.name, email: user.email } 
     }, { status: 201 });
 
-  } catch {
+  } catch (error) {
+    console.error('Registration Error:', error);
     return NextResponse.json({ error: 'Erro ao registrar usuário' }, { status: 500 });
   }
 }
