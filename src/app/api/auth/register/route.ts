@@ -6,14 +6,20 @@ import { z } from 'zod';
 const registerSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
   areaIds: z.array(z.string().uuid()).optional(),
   avatarUrl: z.string().url().nullish(),
 });
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 });
+    }
+
     const result = registerSchema.safeParse(body);
     
     if (!result.success) {

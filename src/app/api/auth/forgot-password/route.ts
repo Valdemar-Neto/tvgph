@@ -5,7 +5,14 @@ import crypto from 'crypto';
 
 export async function POST(request: Request) {
   try {
-    const { email } = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 });
+    }
+
+    const { email } = body;
 
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
@@ -15,8 +22,9 @@ export async function POST(request: Request) {
       where: { email }
     });
 
+    // If user doesn't exist, we still simulate a small delay to match DB lookup time
     if (!user) {
-      // Returning 200 even if not found for security (avoids database fishing)
+      await new Promise(resolve => setTimeout(resolve, Math.random() * 100 + 50)); 
       return NextResponse.json({ message: 'If the email exists, a link has been sent.' }, { status: 200 });
     }
 
@@ -49,7 +57,8 @@ export async function POST(request: Request) {
     // Real Email Sending via Gmail SMTP
     const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
 
-    const { success, error } = await sendEmail({
+    // Send email asynchronously to avoid timing attacks
+    sendEmail({
       to: email,
       subject: 'RECOVERY PROTOCOL: Password Reset Required',
       html: `
@@ -82,12 +91,7 @@ export async function POST(request: Request) {
           </div>
         </div>
       `
-    });
-
-    if (!success) {
-      console.error('Nodemailer Error:', error);
-      return NextResponse.json({ error: 'Erro ao processar envio de e-mail via SMTP.' }, { status: 500 });
-    }
+    }).catch(err => console.error('Delayed Email Error:', err));
 
     return NextResponse.json({ message: 'Se o e-mail existir, um link foi enviado.' }, { status: 200 });
 

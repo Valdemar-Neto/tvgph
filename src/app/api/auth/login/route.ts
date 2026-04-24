@@ -10,11 +10,20 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
-const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET is not defined in environment variables');
+}
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 });
+    }
+
     const result = loginSchema.safeParse(body);
     
     if (!result.success) {
@@ -39,6 +48,10 @@ export async function POST(req: Request) {
 
     if (!user.active) {
       return NextResponse.json({ error: 'Your account has not been approved by the manager yet' }, { status: 403 });
+    }
+
+    if (!JWT_SECRET) {
+      return NextResponse.json({ error: 'Authentication service unavailable' }, { status: 500 });
     }
 
     const token = jwt.sign(
