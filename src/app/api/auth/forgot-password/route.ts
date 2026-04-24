@@ -34,7 +34,7 @@ export async function POST(request: Request) {
 
     // Real Email Sending via Gmail SMTP
     const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
-    
+
     const { success, error } = await sendEmail({
       to: email,
       subject: 'RECOVERY PROTOCOL: Password Reset Required',
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
           </div>
           
           <div style="text-align: center; margin: 40px 0;">
-            <a href="${resetUrl}" style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 18px 36px; text-decoration: none; font-weight: 900; border-radius: 4px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">RE-ESTABELECER ACESSO</a>
+            <a href="${resetUrl}" style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 18px 36px; text-decoration: none; font-weight: 900; border-radius: 4px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Clique aqui</a>
           </div>
           
           <div style="border-top: 1px solid #1e293b; padding-top: 30px; margin-top: 40px;">
