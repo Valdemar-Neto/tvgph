@@ -46,7 +46,7 @@ export async function POST(request: Request) {
           </div>
           
           <div style="margin-bottom: 30px;">
-            <p style="font-size: 16px; line-height: 1.6; color: #f8fafc;">Um pedido de redefinição de senha foi detectado para sua conta de pesquisador GPH.</p>
+            <p style="font-size: 16px; line-height: 1.6; color: #f8fafc;">Um pedido de redefinição de senha foi detectado para sua conta no GPH REPORT.</p>
             
             <div style="background-color: #0f172a; padding: 20px; border-left: 4px solid #3b82f6; margin: 25px 0;">
               <p style="margin: 0; font-size: 11px; color: #3b82f6; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">STATUS DO PROTOCOLO: RECUPERAÇÃO PENDENTE</p>
