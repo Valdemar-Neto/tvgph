@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { AlertTriangle, Home, MoveLeft } from 'lucide-react';
 
 export default function NotFound() {
@@ -41,16 +42,16 @@ export default function NotFound() {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button 
-            asChild
-            size="lg" 
-            className="bg-primary hover:bg-primary/90 text-white px-8 h-12 rounded-full font-bold shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95"
+          <Link 
+            href="/"
+            className={cn(
+              buttonVariants({ size: "lg" }),
+              "bg-primary hover:bg-primary/90 text-white px-8 h-12 rounded-full font-bold shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
+            )}
           >
-            <Link href="/">
-              <Home className="mr-2 w-4 h-4" />
-              Return to Base
-            </Link>
-          </Button>
+            <Home className="mr-2 w-4 h-4" />
+            Return to Base
+          </Link>
           
           <Button 
             variant="outline"
