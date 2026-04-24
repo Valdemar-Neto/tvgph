@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,39 +12,17 @@ import NextImage from 'next/image';
 import { cn } from '@/lib/utils';
 import { CircuitBackground } from '@/components/auth/CircuitBackground';
 
-interface Area {
-  id: string;
-  name: string;
-}
-
 export default function RegistrationPage() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [areaId,] = useState('');
-  const [, setAreas] = useState<Area[]>([]);
   const [loading, setLoading] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isFormHovered, setIsFormHovered] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    async function fetchAreas() {
-      try {
-        const res = await fetch('/api/areas');
-        if (res.ok) {
-          const data = await res.json();
-          setAreas(data);
-        }
-      } catch (err) {
-        console.error('Failed to fetch areas', err);
-      }
-    }
-    fetchAreas();
-  }, []);
 
   const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -60,15 +38,12 @@ export default function RegistrationPage() {
       setAvatarPreview(reader.result as string);
     };
     reader.readAsDataURL(file);
+    // Note: In a real app we'd upload this to R2. For now, we use a placeholder or the base64.
     setAvatarUrl(`https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=random`);
   };
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
-    if (!areaId) {
-      toast.error('Please select a research area');
-      return;
-    }
     setLoading(true);
 
     try {
@@ -79,13 +54,12 @@ export default function RegistrationPage() {
           name,
           email,
           password,
-          areaId,
-          avatar: avatarUrl
+          avatarUrl: avatarUrl || undefined
         })
       });
 
       if (res.ok) {
-        toast.success('Registration successful. Welcome to GPH.');
+        toast.success('Registration successful. Please wait for manager approval.');
         router.push('/login');
       } else {
         const data = await res.json();
