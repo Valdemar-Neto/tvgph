@@ -56,8 +56,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Private page behavior
-  if (!token) {
+  // List of private routes that require authentication
+  const privateRoutes = ['/tvgph', '/dashboard', '/attendance', '/my-profile', '/my-reports'];
+  const isPrivateRoute = privateRoutes.some(route => pathname.startsWith(route));
+
+  // If trying to access a private route without a token, redirect to login
+  if (isPrivateRoute && !token) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
