@@ -34,13 +34,11 @@ export default async function KanbanPage({ params }: { params: { area: string } 
   // Get auth info
   const token = cookies().get('auth_token')?.value;
   let role = 'MEMBER';
-  let userId = '';
 
   if (token) {
     try {
       const payload = jwt.verify(token, JWT_SECRET) as { role: string; userId: string };
       role = payload.role;
-      userId = payload.userId;
     } catch {
       // Invalid token
     }
