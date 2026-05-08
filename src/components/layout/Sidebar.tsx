@@ -36,18 +36,23 @@ export function Sidebar({ role, onNavigate }: SidebarProps) {
     }
   }
 
-  const navLinks = [
+  const generalLinks = [
     { label: 'Feed GPH', href: '/tvgph', icon: Tv },
     { label: 'My Reports', href: '/my-reports', icon: NotebookPen },
     { label: 'Attendance', href: '/attendance', icon: GraduationCap },
-    { label: 'Events', href: '/tvgph?area=EVENTOS', icon: Calendar },
-    { label: 'Marketing', href: '/tvgph?area=MARKETING', icon: Megaphone },
     { label: 'Settings', href: '/my-profile', icon: Settings },
   ];
 
-  if (['MANAGER', 'PROFESSOR'].includes(role)) {
-    navLinks.push({ label: 'Admin Panel', href: '/dashboard', icon: Cpu });
-  }
+  const departmentLinks = [
+    { label: 'Courses', href: '/kanban/CURSOS', icon: GraduationCap },
+    { label: 'Projects', href: '/kanban/PROJETOS', icon: Cpu },
+    { label: 'Events', href: '/kanban/EVENTOS', icon: Calendar },
+    { label: 'Marketing', href: '/kanban/MARKETING', icon: Megaphone },
+  ];
+
+  const adminLinks = ['MANAGER', 'PROFESSOR'].includes(role)
+    ? [{ label: 'Admin Panel', href: '/dashboard', icon: Cpu }]
+    : [];
 
   return (
     <aside className="w-full h-full bg-white border-r border-slate-100 flex flex-col justify-between overflow-hidden shadow-sm">
@@ -62,29 +67,89 @@ export function Sidebar({ role, onNavigate }: SidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-1.5 overflow-y-auto px-1">
-          {navLinks.map((link) => {
-            const Icon = link.icon;
-            const isActive = pathname === link.href || (link.href !== '#' && pathname.startsWith(link.href));
+        <nav className="flex-1 space-y-6 overflow-y-auto px-1">
+          {/* General Section */}
+          <div className="space-y-1.5">
+            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-300 px-3 mb-2">General</p>
+            {generalLinks.map((link) => {
+              const Icon = link.icon;
+              const isActive = pathname === link.href || (link.href !== '/tvgph' && pathname.startsWith(link.href));
 
-            return (
-              <Link
-                key={link.label}
-                href={link.href}
-                onClick={() => onNavigate?.()}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${isActive
-                  ? 'bg-primary/5 text-primary'
-                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
-              >
-                <Icon className={`h-4.5 w-4.5 transition-colors ${isActive ? 'text-primary' : 'text-slate-400 group-hover:text-slate-600'}`} />
-                <span className={`text-[13px] font-semibold ${isActive ? 'text-primary font-bold' : ''}`}>{link.label}</span>
-                {isActive && (
-                  <div className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
-                )}
-              </Link>
-            );
-          })}
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => onNavigate?.()}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${isActive
+                    ? 'bg-primary/5 text-primary'
+                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                >
+                  <Icon className={`h-4.5 w-4.5 transition-colors ${isActive ? 'text-primary' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                  <span className={`text-[13px] font-semibold ${isActive ? 'text-primary font-bold' : ''}`}>{link.label}</span>
+                  {isActive && (
+                    <div className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Departments Section */}
+          <div className="space-y-1.5">
+            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-300 px-3 mb-2">Departments</p>
+            {departmentLinks.map((link) => {
+              const Icon = link.icon;
+              const isActive = pathname.startsWith(link.href);
+
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => onNavigate?.()}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${isActive
+                    ? 'bg-primary/5 text-primary'
+                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                >
+                  <Icon className={`h-4.5 w-4.5 transition-colors ${isActive ? 'text-primary' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                  <span className={`text-[13px] font-semibold ${isActive ? 'text-primary font-bold' : ''}`}>{link.label}</span>
+                  {isActive && (
+                    <div className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Admin Section */}
+          {adminLinks.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-300 px-3 mb-2">Admin</p>
+              {adminLinks.map((link) => {
+                const Icon = link.icon;
+                const isActive = pathname.startsWith(link.href);
+
+                return (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    onClick={() => onNavigate?.()}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${isActive
+                      ? 'bg-primary/5 text-primary'
+                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                      }`}
+                  >
+                    <Icon className={`h-4.5 w-4.5 transition-colors ${isActive ? 'text-primary' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                    <span className={`text-[13px] font-semibold ${isActive ? 'text-primary font-bold' : ''}`}>{link.label}</span>
+                    {isActive && (
+                      <div className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </nav>
 
         {/* Action Button */}
