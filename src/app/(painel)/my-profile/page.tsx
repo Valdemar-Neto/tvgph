@@ -107,7 +107,21 @@ export default function MeuPerfilPage() {
 
       const publicUrl = `https://${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL}/${presignData.objectKey}`;
       setForm(f => ({ ...f, avatarUrl: publicUrl }));
-      toast.success('New profile picture ready!');
+
+      // Auto-save avatar to database immediately (no need to click "Save Changes")
+      const saveRes = await fetch('/api/auth/me', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: form.name || user?.name, avatarUrl: publicUrl })
+      });
+
+      if (saveRes.ok) {
+        const data = await saveRes.json();
+        setUser((prev: UserProfile | null) => prev ? ({ ...prev, ...data.user }) : data.user);
+        toast.success('Profile picture updated!');
+      } else {
+        toast.error('Photo uploaded but failed to save to profile.');
+      }
     } catch (err) {
       console.error(err);
       toast.error('Failed to upload profile picture.');
