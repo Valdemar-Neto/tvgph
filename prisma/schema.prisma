@@ -26,6 +26,8 @@ model User {
   meetings          Meeting[]    @relation("MeetingCreator")
   reports           Report[]
   userAreas         UserArea[]
+  createdTasks      Task[]       @relation("TaskCreator")
+  assignedTasks     Task[]       @relation("TaskAssignee")
 }
 
 model Area {
@@ -33,6 +35,7 @@ model Area {
   name      AreaName
   reports   Report[]
   userAreas UserArea[]
+  tasks     Task[]
 }
 
 model UserArea {
@@ -139,4 +142,29 @@ enum AttachmentType {
   VIDEO
   PDF
   IMAGE
+}
+
+enum TaskStatus {
+  BACKLOG
+  DO
+  DOING
+  DONE
+}
+
+model Task {
+  id          String     @id @default(uuid()) @db.Uuid
+  title       String
+  description String?
+  status      TaskStatus @default(BACKLOG)
+  position    Int        @default(0)
+  areaId      String     @db.Uuid
+  createdById String     @db.Uuid
+  assigneeId  String?    @db.Uuid
+  deadline    DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  area        Area       @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  createdBy   User       @relation("TaskCreator", fields: [createdById], references: [id])
+  assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id])
 }

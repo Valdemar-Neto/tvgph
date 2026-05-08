@@ -57,7 +57,7 @@ export function middleware(request: NextRequest) {
   }
 
   // List of private routes that require authentication
-  const privateRoutes = ['/tvgph', '/dashboard', '/attendance', '/my-profile', '/my-reports'];
+  const privateRoutes = ['/tvgph', '/dashboard', '/attendance', '/my-profile', '/my-reports', '/kanban'];
   const isPrivateRoute = privateRoutes.some(route => pathname.startsWith(route));
 
   // If trying to access a private route without a token, redirect to login
