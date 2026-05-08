@@ -7,7 +7,8 @@ import {
   AlertCircle,
   MessageSquare,
   ChevronDown,
-  Clock
+  Clock,
+  Pencil
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -168,6 +169,11 @@ export default async function TvgphGlobalFeedPage({
                     {areaName}
                   </Badge>
                   <div className="flex items-center gap-1.5 text-slate-400 text-[11px] font-bold">
+                    {(['MANAGER', 'PROFESSOR'].includes(role) || report.authorId === userId) && (
+                      <Link href={`/tvgph/${report.id}/editar`} className="hover:text-primary transition-colors">
+                        <Pencil className="h-3 w-3" />
+                      </Link>
+                    )}
                     {role === 'PROFESSOR' && (
                       <DeleteReportButton 
                         reportId={report.id} 

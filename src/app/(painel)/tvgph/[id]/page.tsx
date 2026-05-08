@@ -89,13 +89,13 @@ export default async function ReportDetailPage({ params }: { params: { id: strin
               redirectAfterDelete={true} 
             />
           )}
-          {role === 'MEMBER' && report.authorId === userId && report.status === 'SUBMITTED' && (
+          {(role === 'MEMBER' && report.authorId === userId && report.status === 'SUBMITTED') || ['MANAGER', 'PROFESSOR'].includes(role) ? (
             <Link href={`/tvgph/${report.id}/editar`}>
               <Button className="circuit-border border-primary text-primary bg-primary/5 hover:bg-primary/10 text-[10px] font-bold uppercase tracking-widest h-8 px-4">
-                MODIFY_BUFFER
+                {['MANAGER', 'PROFESSOR'].includes(role) ? 'FORCE_MODIFY' : 'MODIFY_BUFFER'}
               </Button>
             </Link>
-          )}
+          ) : null}
         </div>
       </div>
 
