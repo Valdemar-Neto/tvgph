@@ -3,9 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import yaml from 'js-yaml';
 
-interface OpenAPISpec {
+interface OpenAPISpec extends Record<string, unknown> {
   servers?: Array<{ url: string; description?: string }>;
-  [key: string]: any;
 }
 
 export async function GET(req: Request) {
