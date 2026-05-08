@@ -57,8 +57,10 @@ export async function POST(request: Request) {
     // Real Email Sending via Gmail SMTP
     const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
 
-    // Send email asynchronously to avoid timing attacks
-    sendEmail({
+    // Await email + fixed delay to mitigate timing attacks in serverless
+    // Promise.all ensures both complete: the email is sent AND a minimum 500ms passes
+    // This prevents attackers from detecting valid emails by response time differences
+    const emailPromise = sendEmail({
       to: email,
       subject: 'RECOVERY PROTOCOL: Password Reset Required',
       html: `
@@ -91,7 +93,12 @@ export async function POST(request: Request) {
           </div>
         </div>
       `
-    }).catch(err => console.error('Delayed Email Error:', err));
+    });
+
+    const minimumDelay = new Promise(resolve => setTimeout(resolve, 500));
+
+    // Wait for BOTH the email to finish AND a minimum delay (timing attack protection)
+    await Promise.all([emailPromise, minimumDelay]);
 
     return NextResponse.json({ message: 'Se o e-mail existir, um link foi enviado.' }, { status: 200 });
 
