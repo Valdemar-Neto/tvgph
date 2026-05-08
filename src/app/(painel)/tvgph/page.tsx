@@ -110,6 +110,38 @@ export default async function TvgphGlobalFeedPage({
         </Button>
       </div>
 
+      {/* Area Filter Chips */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <Link href="/tvgph">
+          <Badge
+            variant={!areaFilter ? 'default' : 'outline'}
+            className={cn(
+              'cursor-pointer px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all',
+              !areaFilter
+                ? 'bg-primary text-white shadow-md shadow-primary/20 hover:bg-primary/90'
+                : 'bg-white border-slate-200 text-slate-500 hover:border-primary/30 hover:text-primary'
+            )}
+          >
+            All
+          </Badge>
+        </Link>
+        {(['CURSOS', 'PROJETOS', 'EVENTOS', 'MARKETING'] as const).map((area) => (
+          <Link key={area} href={`/tvgph?area=${area}`}>
+            <Badge
+              variant={areaFilter === area ? 'default' : 'outline'}
+              className={cn(
+                'cursor-pointer px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all',
+                areaFilter === area
+                  ? 'bg-primary text-white shadow-md shadow-primary/20 hover:bg-primary/90'
+                  : 'bg-white border-slate-200 text-slate-500 hover:border-primary/30 hover:text-primary'
+              )}
+            >
+              {area}
+            </Badge>
+          </Link>
+        ))}
+      </div>
+
       {/* Alert Banner */}
       {!hasReported && (
         <div className="bg-primary rounded-2xl p-6 md:p-8 flex items-center justify-between shadow-xl shadow-primary/20 animate-in fade-in slide-in-from-top-4 duration-1000">
