@@ -24,6 +24,11 @@ export async function GET() {
           include: {
             area: true
           }
+        },
+        userSkills: {
+          include: {
+            skill: true
+          }
         }
       }
     });
