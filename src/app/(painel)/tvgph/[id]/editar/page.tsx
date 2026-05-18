@@ -11,7 +11,14 @@ import { toast } from 'sonner';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
-export default function EditarReportPage({ params }: { params: { id: string } }) {
+interface EditarReportPageProps {
+  params: {
+    id: string;
+  };
+}
+
+
+export default function EditarReportPage({ params }: EditarReportPageProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

@@ -16,6 +16,7 @@ const areaDisplayNames: Record<string, string> = {
   MARKETING: 'Marketing',
 };
 
+
 export async function generateMetadata({ params }: { params: { area: string } }): Promise<Metadata> {
   const areaName = areaDisplayNames[params.area.toUpperCase()] || params.area;
   return {

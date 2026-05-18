@@ -18,17 +18,14 @@ interface PendingReport {
   isoWeek: string;
 }
 
-export function Header({ 
-  userName, 
-  avatarUrl, 
-  role,
-  onMenuClick 
-}: { 
-  userName?: string, 
-  avatarUrl?: string | null, 
-  role?: string,
-  onMenuClick?: () => void 
-}) {
+interface HeaderProps {
+  userName?: string;
+  avatarUrl?: string | null;
+  role?: string;
+  onMenuClick?: () => void;
+}
+
+export function Header({ userName, avatarUrl, role, onMenuClick }: HeaderProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -91,7 +88,7 @@ export function Header({
   return (
     <header className="h-16 border-b border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-30 px-4 md:px-8 flex items-center justify-between gap-4">
       {/* Mobile Menu Toggle */}
-      <button 
+      <button
         onClick={onMenuClick}
         className="lg:hidden p-2 -ml-1 rounded-full text-slate-600 hover:bg-slate-100 transition-colors"
       >
@@ -201,12 +198,12 @@ export function Header({
             </p>
           </div>
           <div className="h-9 w-9 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-sm ring-1 ring-slate-100 relative">
-            <Image 
-              src={displayAvatar} 
-              alt="User" 
+            <Image
+              src={displayAvatar}
+              alt="User"
               fill
               unoptimized={displayAvatar.includes('.svg')}
-              className="object-cover" 
+              className="object-cover"
             />
           </div>
         </button>

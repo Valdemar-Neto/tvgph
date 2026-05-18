@@ -33,9 +33,15 @@ interface Report {
   }[];
 }
 
+interface MyReportsPageProps {
+  searchParams: {
+    q?: string;
+  };
+}
+
 const JWT_SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
 
-export default async function MyReportsPage({ searchParams }: { searchParams: { q?: string } }) {
+export default async function MyReportsPage({ searchParams }: MyReportsPageProps) {
   const query = searchParams?.q || '';
   const token = cookies().get('auth_token')?.value;
   if (!token) redirect('/login');
