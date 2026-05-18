@@ -13,7 +13,8 @@ import {
   LogOut,
   Plus,
   NotebookPen,
-  Tv
+  Tv,
+  Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -38,6 +39,7 @@ export function Sidebar({ role, onNavigate }: SidebarProps) {
 
   const generalLinks = [
     { label: 'Feed GPH', href: '/tvgph', icon: Tv },
+    { label: 'Members', href: '/members', icon: Users },
     { label: 'My Reports', href: '/my-reports', icon: NotebookPen },
     { label: 'Attendance', href: '/attendance', icon: GraduationCap },
     { label: 'Settings', href: '/my-profile', icon: Settings },
