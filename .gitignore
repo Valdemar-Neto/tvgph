@@ -48,3 +48,7 @@ next-env.d.ts
 /test-results
 /scratch
 /.gemini
+
+prd.md 
+implementation_plan.md
+task.md 
