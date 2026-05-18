@@ -21,6 +21,30 @@ async function main() {
     }
   }
 
+  // 1.5. Criar as skills do catálogo caso o banco esteja vazio
+  const preDefinedSkills = [
+    { name: 'Arduino', type: 'HARD' },
+    { name: 'PCB Design', type: 'HARD' },
+    { name: 'Python', type: 'HARD' },
+    { name: 'VHDL', type: 'HARD' },
+    { name: 'IoT', type: 'HARD' },
+    { name: 'Machine Learning', type: 'HARD' },
+    { name: 'Liderança', type: 'SOFT' },
+    { name: 'Comunicação', type: 'SOFT' },
+    { name: 'Trabalho em equipe', type: 'SOFT' },
+    { name: 'Gestão de tempo', type: 'SOFT' }
+  ];
+
+  for (const skill of preDefinedSkills) {
+    const exists = await prisma.skill.findFirst({ where: { name: skill.name } });
+    if (!exists) {
+      await prisma.skill.create({ data: skill });
+      console.log(`Skill ${skill.name} (${skill.type}) criada com sucesso.`);
+    } else {
+      console.log(`Skill ${skill.name} já existia.`);
+    }
+  }
+
   // 2. Gato (Workaround) pros testes: Víncular TODOS os usuários órfãos a todas as áreas!
   const users = await prisma.user.findMany();
   for (const user of users) {
