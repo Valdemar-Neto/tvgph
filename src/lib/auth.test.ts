@@ -1,22 +1,25 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getAuthSession } from './auth';
 import jwt from 'jsonwebtoken';
 
+const mockGet = vi.fn();
+
 // Mock do next/headers
 vi.mock('next/headers', () => ({
-  cookies: vi.fn(() => ({
-    get: vi.fn()
-  }))
+  cookies: () => ({
+    get: mockGet
+  })
 }));
 
-import { cookies } from 'next/headers';
-
 describe('getAuthSession', () => {
-  // Use o mesmo fallback ou o valor real do env carregado pelo Vitest
   const SECRET = process.env.JWT_SECRET || 'tvgph_secret_key_123';
 
+  beforeEach(() => {
+    mockGet.mockReset();
+  });
+
   it('deve retornar null se o cookie auth_token não existir', () => {
-    (cookies as unknown as { (): { get: { mockReturnValue: (v: unknown) => void } } })().get.mockReturnValue(undefined);
+    mockGet.mockReturnValue(undefined);
     expect(getAuthSession()).toBeNull();
   });
 
@@ -24,14 +27,14 @@ describe('getAuthSession', () => {
     const payload = { userId: 'user-123', role: 'MANAGER' };
     const token = jwt.sign(payload, SECRET);
     
-    (cookies as unknown as { (): { get: { mockReturnValue: (v: unknown) => void } } })().get.mockReturnValue({ value: token });
+    mockGet.mockReturnValue({ value: token });
     
     const session = getAuthSession();
     expect(session).toEqual(payload);
   });
 
   it('deve retornar null se o token for inválido', () => {
-    (cookies as unknown as { (): { get: { mockReturnValue: (v: unknown) => void } } })().get.mockReturnValue({ value: 'token-invalido' });
+    mockGet.mockReturnValue({ value: 'token-invalido' });
     expect(getAuthSession()).toBeNull();
   });
 });
