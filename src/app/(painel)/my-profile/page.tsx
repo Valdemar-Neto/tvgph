@@ -11,6 +11,17 @@ import { Pencil, Save, UserCircle, KeyRound, ArrowRight, Camera, Loader2 } from 
 import { cn } from '@/lib/utils';
 import { useRef } from 'react';
 import Image from 'next/image';
+import { SkillsSection } from '@/components/skills/SkillsSection';
+
+interface Skill {
+  id: string;
+  name: string;
+  type: 'HARD' | 'SOFT';
+}
+
+interface UserSkill {
+  skill: Skill;
+}
 
 interface UserArea {
   area: {
@@ -27,6 +38,7 @@ interface UserProfile {
   bio: string | null;
   avatarUrl: string | null;
   userAreas?: UserArea[];
+  userSkills?: UserSkill[];
 }
 
 export default function MeuPerfilPage() {
@@ -335,6 +347,21 @@ export default function MeuPerfilPage() {
           </div>
         </div>
       </div>
+
+      {/* Skills Matrix Section */}
+      <SkillsSection
+        userId={user.id}
+        userSkills={user.userSkills || []}
+        onSkillsUpdated={(updatedSkills) => {
+          setUser((prev) => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              userSkills: updatedSkills.map(skill => ({ skill }))
+            };
+          });
+        }}
+      />
 
       {/* Security Section */}
       <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6">
