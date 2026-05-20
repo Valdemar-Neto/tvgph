@@ -60,7 +60,14 @@ export async function POST(req: Request) {
     const result = createTaskSchema.safeParse(body);
 
     if (!result.success) {
-      return NextResponse.json({ error: 'Invalid data', details: result.error.format() }, { status: 400 });
+      const fieldErrors = result.error.flatten().fieldErrors;
+      const messages: string[] = [];
+      if (fieldErrors.title) messages.push('Título é obrigatório (máx. 200 caracteres)');
+      if (fieldErrors.description) messages.push('Descrição deve ter no máximo 1000 caracteres');
+      if (fieldErrors.areaId) messages.push('Área é obrigatória');
+      if (fieldErrors.assigneeId) messages.push('ID do responsável inválido');
+      if (fieldErrors.deadline) messages.push('Data de prazo inválida');
+      return NextResponse.json({ error: messages.join('. ') || 'Preencha os campos da tarefa corretamente', details: result.error.format() }, { status: 400 });
     }
 
     const { title, description, areaId, assigneeId, deadline } = result.data;

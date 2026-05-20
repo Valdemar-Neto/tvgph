@@ -27,7 +27,11 @@ export async function POST(req: Request) {
     const result = loginSchema.safeParse(body);
     
     if (!result.success) {
-      return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
+      const fieldErrors = result.error.flatten().fieldErrors;
+      const messages: string[] = [];
+      if (fieldErrors.email) messages.push('E-mail inválido');
+      if (fieldErrors.password) messages.push('Senha é obrigatória');
+      return NextResponse.json({ error: messages.join('. ') || 'Preencha os campos de login corretamente' }, { status: 400 });
     }
 
     const { email, password } = result.data;
@@ -37,13 +41,13 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+      return NextResponse.json({ error: 'E-mail não encontrado' }, { status: 401 });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+      return NextResponse.json({ error: 'Senha incorreta' }, { status: 401 });
     }
 
     if (!user.active) {

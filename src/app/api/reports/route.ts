@@ -60,7 +60,14 @@ export async function POST(req: Request) {
     const result = createReportSchema.safeParse(body);
 
     if (!result.success) {
-      return NextResponse.json({ error: 'Invalid data', details: result.error.format() }, { status: 400 });
+      const fieldErrors = result.error.flatten().fieldErrors;
+      const messages: string[] = [];
+      if (fieldErrors.title) messages.push('Título deve ter entre 2 e 100 caracteres');
+      if (fieldErrors.areaId) messages.push('Área é obrigatória');
+      if (fieldErrors.content) messages.push('Conteúdo do relatório é obrigatório');
+      if (fieldErrors.isoWeek) messages.push('Formato da semana inválido (ex: 2026-W15)');
+      if (fieldErrors.attachments) messages.push('Anexos inválidos — verifique tipo, URL, nome e tamanho');
+      return NextResponse.json({ error: messages.join('. ') || 'Preencha os campos do relatório corretamente', details: result.error.format() }, { status: 400 });
     }
 
     const { title, areaId, content, isoWeek, attachments } = result.data;

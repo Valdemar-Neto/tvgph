@@ -32,7 +32,15 @@ export async function PATCH(
     const result = updateTaskSchema.safeParse(body);
 
     if (!result.success) {
-      return NextResponse.json({ error: 'Invalid data', details: result.error.format() }, { status: 400 });
+      const fieldErrors = result.error.flatten().fieldErrors;
+      const messages: string[] = [];
+      if (fieldErrors.title) messages.push('Título deve ter entre 1 e 200 caracteres');
+      if (fieldErrors.description) messages.push('Descrição deve ter no máximo 1000 caracteres');
+      if (fieldErrors.status) messages.push('Status inválido (valores aceitos: BACKLOG, DO, DOING, DONE)');
+      if (fieldErrors.position) messages.push('Posição deve ser um número inteiro positivo');
+      if (fieldErrors.assigneeId) messages.push('ID do responsável inválido');
+      if (fieldErrors.deadline) messages.push('Data de prazo inválida');
+      return NextResponse.json({ error: messages.join('. ') || 'Dados de atualização da tarefa inválidos', details: result.error.format() }, { status: 400 });
     }
 
     const { title, description, status, position, assigneeId, deadline } = result.data;

@@ -23,7 +23,14 @@ export async function POST(req: Request) {
     const result = registerSchema.safeParse(body);
     
     if (!result.success) {
-      return NextResponse.json({ error: 'Invalid data', details: result.error.format() }, { status: 400 });
+      const fieldErrors = result.error.flatten().fieldErrors;
+      const messages: string[] = [];
+      if (fieldErrors.name) messages.push('Nome é obrigatório');
+      if (fieldErrors.email) messages.push('E-mail inválido');
+      if (fieldErrors.password) messages.push('A senha deve ter no mínimo 8 caracteres');
+      if (fieldErrors.areaIds) messages.push('IDs de área inválidos');
+      if (fieldErrors.avatarUrl) messages.push('URL do avatar inválida');
+      return NextResponse.json({ error: messages.join('. ') || 'Preencha os campos de cadastro corretamente', details: result.error.format() }, { status: 400 });
     }
 
     const { name, email, password, areaIds, avatarUrl } = result.data;

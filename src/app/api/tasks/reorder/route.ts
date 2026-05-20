@@ -28,7 +28,10 @@ export async function PATCH(req: Request) {
     const result = reorderSchema.safeParse(body);
 
     if (!result.success) {
-      return NextResponse.json({ error: 'Invalid data', details: result.error.format() }, { status: 400 });
+      const fieldErrors = result.error.flatten().fieldErrors;
+      const messages: string[] = [];
+      if (fieldErrors.updates) messages.push('Lista de atualizações inválida — envie um array com id, status e position para cada tarefa');
+      return NextResponse.json({ error: messages.join('. ') || 'Dados de reordenação inválidos', details: result.error.format() }, { status: 400 });
     }
 
     const { updates } = result.data;
